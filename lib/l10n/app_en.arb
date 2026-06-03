@@ -1,0 +1,148 @@
+{
+  "@@locale": "en",
+  "appTitle": "Color Vision Reader",
+  "homeShelfTitle": "Color Weakness Bookshelf",
+  "homeHeroDescription": "Pick an atlas to start viewing and find the display style that feels clearer and more comfortable.",
+  "homeConventionsTitle": "Quick Start",
+  "homeConventionsBody": "1. Pick an atlas\n2. Open the reader\n3. Switch effects",
+  "homeShelfPanelTitle": "PDF Shelf",
+  "homeShelfPanelSubtitle": "Editions 1-6 are listed here. Ready items can be opened right away.",
+  "bookCatalogLoadFailed": "Failed to load the book catalog: {error}",
+  "@bookCatalogLoadFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "bookEditionSubtitle": "Edition {edition} Atlas",
+  "@bookEditionSubtitle": {
+    "placeholders": {
+      "edition": {
+        "type": "int"
+      }
+    }
+  },
+  "bookAvailableDescription": "This item is ready and can be opened right away.",
+  "bookReservedDescription": "Prepare the matching file to open it.",
+  "bookReadyStatus": "Ready",
+  "bookMissingStatus": "Missing",
+  "bookReadyAction": "Open and start reading",
+  "bookMissingAction": "Prepare the file to unlock it",
+  "readerCustomBlendName": "Custom Effect",
+  "readerCustomBlendNote": "Adjust the color and display style to match what feels best for you.",
+  "readerOpenPdfFailed": "Failed to open the PDF: {error}",
+  "@readerOpenPdfFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "readerOpenPdfTimedOut": "Opening the document is taking too long. Please go back and try again.",
+  "readerRenderPageFailed": "Failed to render the current page: {error}",
+  "@readerRenderPageFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "readerRenderPageTimedOut": "Loading this page is taking too long. Please try again shortly.",
+  "readerSchemeSaved": "Saved scheme: {name}",
+  "@readerSchemeSaved": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "readerSchemeDeleted": "Deleted saved scheme",
+  "readerSaveSchemeDialogTitle": "Save to My Schemes",
+  "schemeNameLabel": "Scheme name",
+  "schemeNameHint": "For example: Evening soft light",
+  "cancelButton": "Cancel",
+  "saveButton": "Save",
+  "readerCurrentSource": "You are viewing {title}. Compare different effects and keep the view that feels easiest to read.",
+  "@readerCurrentSource": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "maskEditorTitle": "Reading Effects",
+  "maskEditorSubtitle": "Use a ready-made effect or fine-tune one that suits your eyes better.",
+  "presetModeLabel": "Preset Mode",
+  "customBlendModeLabel": "Custom Effect",
+  "effectModeFieldLabel": "Effect mode",
+  "effectModeBlend": "Blend",
+  "effectModeReplace": "Replace Color",
+  "effectModeInvert": "Invert Colors",
+  "effectModeBlendHint": "Adds a gentle color layer on top of the page for subtle adjustment.",
+  "effectModeReplaceHint": "Replaces most page colors with your chosen color so light and dark contrast is easier to follow.",
+  "effectModeInvertHint": "Directly inverts the page colors for a stronger contrast view.",
+  "schemeStatColor": "Color",
+  "schemeStatIntensity": "Strength",
+  "schemeStatMode": "Style",
+  "schemeStatBlend": "Blend",
+  "startCustomFromPresetButton": "Start from this preset",
+  "blendModeFieldLabel": "Blend style",
+  "redChannelLabel": "Red channel",
+  "greenChannelLabel": "Green channel",
+  "blueChannelLabel": "Blue channel",
+  "maskOpacityLabel": "Effect strength",
+  "saveMySchemeButton": "Save to My Schemes",
+  "loadCurrentPresetButton": "Load current preset",
+  "resetCustomButton": "Reset custom values",
+  "mySchemesTitle": "My Schemes",
+  "noSavedSchemesDescription": "No personal schemes have been saved yet. Adjust the parameters first, then tap \"Save to My Schemes\".",
+  "loadSchemeTooltip": "Load scheme",
+  "deleteSchemeTooltip": "Delete scheme",
+  "pagePreviewTitle": "Page Preview",
+  "pagePreviewSubtitle": "The original page stays on the left and the current effect appears on the right for easy comparison.",
+  "pageCounterPreparing": "Preparing",
+  "pageCounterUnavailable": "Unavailable",
+  "previousPageButton": "Previous",
+  "nextPageButton": "Next",
+  "jumpToPageButton": "Jump to Page",
+  "currentPageUnavailable": "The current page is not available right now.",
+  "originalPageLabel": "Original",
+  "assistedPreviewLabel": "Current Effect",
+  "viewLargeImage": "Open large view",
+  "jumpToPageDialogTitle": "Jump to a page",
+  "pageNumberLabel": "Page number",
+  "pageNumberHint": "Enter 1 - {pageCount}",
+  "@pageNumberHint": {
+    "placeholders": {
+      "pageCount": {
+        "type": "int"
+      }
+    }
+  },
+  "jumpButton": "Jump",
+  "invalidPageNumber": "Enter a page number between 1 and {pageCount}",
+  "@invalidPageNumber": {
+    "placeholders": {
+      "pageCount": {
+        "type": "int"
+      }
+    }
+  },
+  "previewDialogTitle": "{title} · Page {pageNumber}",
+  "@previewDialogTitle": {
+    "placeholders": {
+      "title": {},
+      "pageNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "closeTooltip": "Close",
+  "defaultSchemeGreenWeakName": "Green-weak Assist",
+  "defaultSchemeGreenWeakNote": "Adds a warm tone to help nearby greens and browns feel easier to separate.",
+  "defaultSchemeRedWeakName": "Red-weak Assist",
+  "defaultSchemeRedWeakNote": "Adds a cool tone that can make reddish areas easier to notice.",
+  "defaultSchemeBlueYellowWeakName": "Blue-yellow Assist",
+  "defaultSchemeBlueYellowWeakNote": "Uses a soft magenta tone to make cool and warm areas feel more distinct.",
+  "defaultSchemeReplaceWarmName": "Warm Replace",
+  "defaultSchemeReplaceWarmNote": "Replaces most colors with a warm tone so it is easier to focus on light and dark contrast.",
+  "defaultSchemeInvertName": "Invert Colors",
+  "defaultSchemeInvertNote": "Turns the page into an inverted view for stronger contrast, especially under bright light.",
+  "defaultSchemeNoneName": "No Mask",
+  "defaultSchemeNoneNote": "Turns off the effect and shows the original page.",
+  "blendModeSoftLight": "Soft light",
+  "blendModeOverlay": "Overlay",
+  "blendModeMultiply": "Multiply",
+  "blendModeScreen": "Screen"
+}

@@ -1,0 +1,148 @@
+{
+  "@@locale": "zh",
+  "appTitle": "色弱阅读助手",
+  "homeShelfTitle": "色弱辅助书架",
+  "homeHeroDescription": "选择一本图谱开始查看，找到更清晰、更舒服的显示方式。",
+  "homeConventionsTitle": "快速开始",
+  "homeConventionsBody": "1. 选择图谱\n2. 进入阅读\n3. 切换效果",
+  "homeShelfPanelTitle": "PDF 书架",
+  "homeShelfPanelSubtitle": "这里展示 1-6 版图谱，准备好的内容可以直接打开。",
+  "bookCatalogLoadFailed": "书籍目录读取失败：{error}",
+  "@bookCatalogLoadFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "bookEditionSubtitle": "第 {edition} 版图谱",
+  "@bookEditionSubtitle": {
+    "placeholders": {
+      "edition": {
+        "type": "int"
+      }
+    }
+  },
+  "bookAvailableDescription": "当前已准备好，可直接开始阅读。",
+  "bookReservedDescription": "准备好对应文件后即可阅读。",
+  "bookReadyStatus": "已就绪",
+  "bookMissingStatus": "待放入",
+  "bookReadyAction": "打开并开始阅读",
+  "bookMissingAction": "准备好文件后即可打开",
+  "readerCustomBlendName": "自定义效果",
+  "readerCustomBlendNote": "按你的习惯调整颜色和显示方式。",
+  "readerOpenPdfFailed": "PDF 打开失败：{error}",
+  "@readerOpenPdfFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "readerOpenPdfTimedOut": "打开时间过长，请返回后重试。",
+  "readerRenderPageFailed": "当前页渲染失败：{error}",
+  "@readerRenderPageFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "readerRenderPageTimedOut": "当前页加载时间过长，请稍后再试。",
+  "readerSchemeSaved": "已保存方案：{name}",
+  "@readerSchemeSaved": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "readerSchemeDeleted": "已删除个人方案",
+  "readerSaveSchemeDialogTitle": "保存到我的方案",
+  "schemeNameLabel": "方案名称",
+  "schemeNameHint": "例如：晚间阅读柔光",
+  "cancelButton": "取消",
+  "saveButton": "保存",
+  "readerCurrentSource": "正在查看 {title}。对比不同效果，找到更适合你的查看方式。",
+  "@readerCurrentSource": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "maskEditorTitle": "阅读效果",
+  "maskEditorSubtitle": "可以直接使用现成效果，也可以按你的习惯自定义。",
+  "presetModeLabel": "默认模式",
+  "customBlendModeLabel": "自定义效果",
+  "effectModeFieldLabel": "效果模式",
+  "effectModeBlend": "柔和叠加",
+  "effectModeReplace": "替换颜色",
+  "effectModeInvert": "反色查看",
+  "effectModeBlendHint": "在原页上柔和叠加一层颜色，适合做细微调整。",
+  "effectModeReplaceHint": "把页面主要颜色换成你选的颜色，更容易专注看明暗。",
+  "effectModeInvertHint": "直接反转页面颜色，适合需要更强反差时使用。",
+  "schemeStatColor": "颜色",
+  "schemeStatIntensity": "强度",
+  "schemeStatMode": "方式",
+  "schemeStatBlend": "混合",
+  "startCustomFromPresetButton": "从当前预设开始调整",
+  "blendModeFieldLabel": "叠加方式",
+  "redChannelLabel": "红色通道",
+  "greenChannelLabel": "绿色通道",
+  "blueChannelLabel": "蓝色通道",
+  "maskOpacityLabel": "效果强度",
+  "saveMySchemeButton": "保存到我的方案",
+  "loadCurrentPresetButton": "载入当前预设",
+  "resetCustomButton": "重置自定义",
+  "mySchemesTitle": "我的方案",
+  "noSavedSchemesDescription": "还没有保存的个人方案。先调节参数，再点“保存到我的方案”。",
+  "loadSchemeTooltip": "载入方案",
+  "deleteSchemeTooltip": "删除方案",
+  "pagePreviewTitle": "页面预览",
+  "pagePreviewSubtitle": "左侧保留原页，右侧显示当前效果，方便直接对比。",
+  "pageCounterPreparing": "准备中",
+  "pageCounterUnavailable": "不可用",
+  "previousPageButton": "上一页",
+  "nextPageButton": "下一页",
+  "jumpToPageButton": "跳转页码",
+  "currentPageUnavailable": "当前页面暂时不可用。",
+  "originalPageLabel": "原页",
+  "assistedPreviewLabel": "当前效果",
+  "viewLargeImage": "查看大图",
+  "jumpToPageDialogTitle": "跳转到指定页",
+  "pageNumberLabel": "页码",
+  "pageNumberHint": "输入 1 - {pageCount}",
+  "@pageNumberHint": {
+    "placeholders": {
+      "pageCount": {
+        "type": "int"
+      }
+    }
+  },
+  "jumpButton": "跳转",
+  "invalidPageNumber": "请输入 1 - {pageCount} 之间的页码",
+  "@invalidPageNumber": {
+    "placeholders": {
+      "pageCount": {
+        "type": "int"
+      }
+    }
+  },
+  "previewDialogTitle": "{title} · 第 {pageNumber} 页",
+  "@previewDialogTitle": {
+    "placeholders": {
+      "title": {},
+      "pageNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "closeTooltip": "关闭",
+  "defaultSchemeGreenWeakName": "绿色弱辅助",
+  "defaultSchemeGreenWeakNote": "给页面加一点暖色，帮助区分接近的绿色和棕黄色。",
+  "defaultSchemeRedWeakName": "红色弱辅助",
+  "defaultSchemeRedWeakNote": "给页面加一点冷色，帮助看清偏红区域。",
+  "defaultSchemeBlueYellowWeakName": "蓝黄色弱辅助",
+  "defaultSchemeBlueYellowWeakNote": "用柔和的洋红提高冷暖色块的区分度。",
+  "defaultSchemeReplaceWarmName": "暖色替换",
+  "defaultSchemeReplaceWarmNote": "把主要颜色统一替换成暖黄色，更容易专注看明暗。",
+  "defaultSchemeInvertName": "反色查看",
+  "defaultSchemeInvertNote": "把页面变成反色显示，适合在强光下或需要更高反差时查看。",
+  "defaultSchemeNoneName": "无遮罩",
+  "defaultSchemeNoneNote": "关闭效果，直接查看原页。",
+  "blendModeSoftLight": "柔光",
+  "blendModeOverlay": "叠加",
+  "blendModeMultiply": "正片叠底",
+  "blendModeScreen": "滤色"
+}
