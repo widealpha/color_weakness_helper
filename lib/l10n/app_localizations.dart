@@ -299,6 +299,36 @@ abstract class AppLocalizations {
   /// **'Effect mode'**
   String get effectModeFieldLabel;
 
+  /// No description provided for @effectModeDeutanCompensation.
+  ///
+  /// In en, this message translates to:
+  /// **'Green-weak Compensation'**
+  String get effectModeDeutanCompensation;
+
+  /// No description provided for @effectModeProtanCompensation.
+  ///
+  /// In en, this message translates to:
+  /// **'Red-weak Compensation'**
+  String get effectModeProtanCompensation;
+
+  /// No description provided for @effectModeTritanCompensation.
+  ///
+  /// In en, this message translates to:
+  /// **'Blue-yellow Compensation'**
+  String get effectModeTritanCompensation;
+
+  /// No description provided for @effectModeSuppressBlue.
+  ///
+  /// In en, this message translates to:
+  /// **'Suppress Blue'**
+  String get effectModeSuppressBlue;
+
+  /// No description provided for @effectModeHighContrast.
+  ///
+  /// In en, this message translates to:
+  /// **'High-contrast Mono'**
+  String get effectModeHighContrast;
+
   /// No description provided for @effectModeBlend.
   ///
   /// In en, this message translates to:
@@ -316,6 +346,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invert Colors'**
   String get effectModeInvert;
+
+  /// No description provided for @effectModeDeutanCompensationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-maps confusing red-green ranges so nearby green, yellow, and brown details are easier to separate.'**
+  String get effectModeDeutanCompensationHint;
+
+  /// No description provided for @effectModeProtanCompensationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Shifts hard-to-see red information into channels that remain easier to notice.'**
+  String get effectModeProtanCompensationHint;
+
+  /// No description provided for @effectModeTritanCompensationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pulls blue and yellow ranges farther apart when cool and warm areas blur together.'**
+  String get effectModeTritanCompensationHint;
+
+  /// No description provided for @effectModeSuppressBlueHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Turns down blue-heavy areas across the page while keeping some brightness, useful when blue markings dominate the view.'**
+  String get effectModeSuppressBlueHint;
+
+  /// No description provided for @effectModeHighContrastHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drops most color information and pushes black-white contrast harder when you only need clear shapes.'**
+  String get effectModeHighContrastHint;
 
   /// No description provided for @effectModeBlendHint.
   ///
@@ -548,50 +608,62 @@ abstract class AppLocalizations {
   /// No description provided for @defaultSchemeGreenWeakName.
   ///
   /// In en, this message translates to:
-  /// **'Green-weak Assist'**
+  /// **'Green-weak Compensation'**
   String get defaultSchemeGreenWeakName;
 
   /// No description provided for @defaultSchemeGreenWeakNote.
   ///
   /// In en, this message translates to:
-  /// **'Adds a warm tone to help nearby greens and browns feel easier to separate.'**
+  /// **'Re-maps common red-green confusion so nearby greens, yellows, and browns separate more clearly.'**
   String get defaultSchemeGreenWeakNote;
 
   /// No description provided for @defaultSchemeRedWeakName.
   ///
   /// In en, this message translates to:
-  /// **'Red-weak Assist'**
+  /// **'Red-weak Compensation'**
   String get defaultSchemeRedWeakName;
 
   /// No description provided for @defaultSchemeRedWeakNote.
   ///
   /// In en, this message translates to:
-  /// **'Adds a cool tone that can make reddish areas easier to notice.'**
+  /// **'Moves red-heavy information into channels that are easier to notice.'**
   String get defaultSchemeRedWeakNote;
 
   /// No description provided for @defaultSchemeBlueYellowWeakName.
   ///
   /// In en, this message translates to:
-  /// **'Blue-yellow Assist'**
+  /// **'Blue-yellow Compensation'**
   String get defaultSchemeBlueYellowWeakName;
 
   /// No description provided for @defaultSchemeBlueYellowWeakNote.
   ///
   /// In en, this message translates to:
-  /// **'Uses a soft magenta tone to make cool and warm areas feel more distinct.'**
+  /// **'Re-balances blue and yellow ranges so cool and warm areas separate more clearly.'**
   String get defaultSchemeBlueYellowWeakNote;
 
-  /// No description provided for @defaultSchemeReplaceWarmName.
+  /// No description provided for @defaultSchemeSuppressBlueName.
   ///
   /// In en, this message translates to:
-  /// **'Warm Replace'**
-  String get defaultSchemeReplaceWarmName;
+  /// **'Suppress Blue'**
+  String get defaultSchemeSuppressBlueName;
 
-  /// No description provided for @defaultSchemeReplaceWarmNote.
+  /// No description provided for @defaultSchemeSuppressBlueNote.
   ///
   /// In en, this message translates to:
-  /// **'Replaces most colors with a warm tone so it is easier to focus on light and dark contrast.'**
-  String get defaultSchemeReplaceWarmNote;
+  /// **'Tones down blue-heavy regions when they are too dominant or distracting.'**
+  String get defaultSchemeSuppressBlueNote;
+
+  /// No description provided for @defaultSchemeHighContrastName.
+  ///
+  /// In en, this message translates to:
+  /// **'High-contrast Mono'**
+  String get defaultSchemeHighContrastName;
+
+  /// No description provided for @defaultSchemeHighContrastNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Reduce color distraction and keep stronger light-dark contrast when shape matters more than hue.'**
+  String get defaultSchemeHighContrastNote;
 
   /// No description provided for @defaultSchemeInvertName.
   ///

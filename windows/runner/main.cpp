@@ -9,7 +9,7 @@ namespace {
 
 std::wstring GetWindowTitle() {
   return PRIMARYLANGID(::GetUserDefaultUILanguage()) == LANG_CHINESE
-             ? L"色弱阅读助手"
+             ? L"\u8272\u5F31\u9605\u8BFB\u52A9\u624B"
              : L"Color Vision Reader";
 }
 

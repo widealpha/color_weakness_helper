@@ -361,11 +361,62 @@ class PagePreviewPanel extends StatelessWidget {
                 ),
               ],
             ),
+      MaskEffectMode.deutanCompensation => _buildMatrixEffectPreview(
+          page,
+          const ColorFilter.matrix(deutanCompensationColorMatrix),
+          mask.opacity,
+        ),
+      MaskEffectMode.protanCompensation => _buildMatrixEffectPreview(
+          page,
+          const ColorFilter.matrix(protanCompensationColorMatrix),
+          mask.opacity,
+        ),
+      MaskEffectMode.tritanCompensation => _buildMatrixEffectPreview(
+          page,
+          const ColorFilter.matrix(tritanCompensationColorMatrix),
+          mask.opacity,
+        ),
+      MaskEffectMode.highContrast => _buildMatrixEffectPreview(
+          page,
+          const ColorFilter.matrix(highContrastMonochromeColorMatrix),
+          mask.opacity,
+        ),
       MaskEffectMode.invert => ColorFiltered(
           colorFilter: const ColorFilter.matrix(invertColorMatrix),
           child: _buildPageImage(page),
         ),
     };
+  }
+
+  Widget _buildMatrixEffectPreview(
+    RenderedPdfPage page,
+    ColorFilter colorFilter,
+    double strength,
+  ) {
+    if (strength <= 0) {
+      return _buildPageImage(page);
+    }
+
+    if (strength >= 1) {
+      return ColorFiltered(
+        colorFilter: colorFilter,
+        child: _buildPageImage(page),
+      );
+    }
+
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        _buildPageImage(page),
+        Opacity(
+          opacity: strength,
+          child: ColorFiltered(
+            colorFilter: colorFilter,
+            child: _buildPageImage(page),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildPageImage(RenderedPdfPage page) {

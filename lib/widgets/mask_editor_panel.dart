@@ -112,6 +112,8 @@ class MaskEditorPanel extends StatelessWidget {
     ];
     if (effectModeUsesColor(scheme.effectMode)) {
       stats.add(_statChip(context, l10n.schemeStatColor, maskHex(scheme.color)));
+    }
+    if (effectModeUsesOpacity(scheme.effectMode)) {
       stats.add(
         _statChip(
           context,
@@ -203,19 +205,7 @@ class MaskEditorPanel extends StatelessWidget {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: customEffectMode == MaskEffectMode.invert
-                      ? null
-                      : customColor.withValues(
-                          alpha: customOpacity == 0 ? 0.12 : customOpacity,
-                        ),
-                  gradient: customEffectMode == MaskEffectMode.invert
-                      ? const LinearGradient(
-                          colors: <Color>[
-                            Color(0xFFF5F5F5),
-                            Color(0xFF101010),
-                          ],
-                        )
-                      : null,
+                  gradient: schemePreviewGradient(previewScheme),
                   borderRadius: BorderRadius.circular(18),
                 ),
               ),
@@ -252,11 +242,7 @@ class MaskEditorPanel extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Text(
-          switch (customEffectMode) {
-            MaskEffectMode.blend => l10n.effectModeBlendHint,
-            MaskEffectMode.replace => l10n.effectModeReplaceHint,
-            MaskEffectMode.invert => l10n.effectModeInvertHint,
-          },
+          effectModeHint(l10n, customEffectMode),
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
             height: 1.4,
@@ -314,7 +300,7 @@ class MaskEditorPanel extends StatelessWidget {
           _slider(
             label: l10n.maskOpacityLabel,
             value: customOpacity,
-            max: customEffectMode == MaskEffectMode.replace ? 1 : 0.65,
+            max: effectModeMaxOpacity(customEffectMode),
             color: Theme.of(context).colorScheme.primary,
             onChanged: onOpacityChanged,
           ),
@@ -386,21 +372,7 @@ class MaskEditorPanel extends StatelessWidget {
                       width: 18,
                       height: 18,
                       decoration: BoxDecoration(
-                        color: scheme.effectMode == MaskEffectMode.invert
-                            ? null
-                            : scheme.color.withValues(
-                                alpha: scheme.opacity == 0
-                                    ? 0.18
-                                    : scheme.opacity,
-                              ),
-                        gradient: scheme.effectMode == MaskEffectMode.invert
-                            ? const LinearGradient(
-                                colors: <Color>[
-                                  Color(0xFFF5F5F5),
-                                  Color(0xFF101010),
-                                ],
-                              )
-                            : null,
+                        gradient: schemePreviewGradient(scheme),
                         shape: BoxShape.circle,
                       ),
                     ),

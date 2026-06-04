@@ -123,6 +123,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get effectModeFieldLabel => 'Effect mode';
 
   @override
+  String get effectModeDeutanCompensation => 'Green-weak Compensation';
+
+  @override
+  String get effectModeProtanCompensation => 'Red-weak Compensation';
+
+  @override
+  String get effectModeTritanCompensation => 'Blue-yellow Compensation';
+
+  @override
+  String get effectModeSuppressBlue => 'Suppress Blue';
+
+  @override
+  String get effectModeHighContrast => 'High-contrast Mono';
+
+  @override
   String get effectModeBlend => 'Blend';
 
   @override
@@ -130,6 +145,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get effectModeInvert => 'Invert Colors';
+
+  @override
+  String get effectModeDeutanCompensationHint => 'Re-maps confusing red-green ranges so nearby green, yellow, and brown details are easier to separate.';
+
+  @override
+  String get effectModeProtanCompensationHint => 'Shifts hard-to-see red information into channels that remain easier to notice.';
+
+  @override
+  String get effectModeTritanCompensationHint => 'Pulls blue and yellow ranges farther apart when cool and warm areas blur together.';
+
+  @override
+  String get effectModeSuppressBlueHint => 'Turns down blue-heavy areas across the page while keeping some brightness, useful when blue markings dominate the view.';
+
+  @override
+  String get effectModeHighContrastHint => 'Drops most color information and pushes black-white contrast harder when you only need clear shapes.';
 
   @override
   String get effectModeBlendHint => 'Adds a gentle color layer on top of the page for subtle adjustment.';
@@ -252,28 +282,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get closeTooltip => 'Close';
 
   @override
-  String get defaultSchemeGreenWeakName => 'Green-weak Assist';
+  String get defaultSchemeGreenWeakName => 'Green-weak Compensation';
 
   @override
-  String get defaultSchemeGreenWeakNote => 'Adds a warm tone to help nearby greens and browns feel easier to separate.';
+  String get defaultSchemeGreenWeakNote => 'Re-maps common red-green confusion so nearby greens, yellows, and browns separate more clearly.';
 
   @override
-  String get defaultSchemeRedWeakName => 'Red-weak Assist';
+  String get defaultSchemeRedWeakName => 'Red-weak Compensation';
 
   @override
-  String get defaultSchemeRedWeakNote => 'Adds a cool tone that can make reddish areas easier to notice.';
+  String get defaultSchemeRedWeakNote => 'Moves red-heavy information into channels that are easier to notice.';
 
   @override
-  String get defaultSchemeBlueYellowWeakName => 'Blue-yellow Assist';
+  String get defaultSchemeBlueYellowWeakName => 'Blue-yellow Compensation';
 
   @override
-  String get defaultSchemeBlueYellowWeakNote => 'Uses a soft magenta tone to make cool and warm areas feel more distinct.';
+  String get defaultSchemeBlueYellowWeakNote => 'Re-balances blue and yellow ranges so cool and warm areas separate more clearly.';
 
   @override
-  String get defaultSchemeReplaceWarmName => 'Warm Replace';
+  String get defaultSchemeSuppressBlueName => 'Suppress Blue';
 
   @override
-  String get defaultSchemeReplaceWarmNote => 'Replaces most colors with a warm tone so it is easier to focus on light and dark contrast.';
+  String get defaultSchemeSuppressBlueNote => 'Tones down blue-heavy regions when they are too dominant or distracting.';
+
+  @override
+  String get defaultSchemeHighContrastName => 'High-contrast Mono';
+
+  @override
+  String get defaultSchemeHighContrastNote => 'Reduce color distraction and keep stronger light-dark contrast when shape matters more than hue.';
 
   @override
   String get defaultSchemeInvertName => 'Invert Colors';

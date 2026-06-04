@@ -123,6 +123,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get effectModeFieldLabel => '效果模式';
 
   @override
+  String get effectModeDeutanCompensation => '绿弱补偿';
+
+  @override
+  String get effectModeProtanCompensation => '红弱补偿';
+
+  @override
+  String get effectModeTritanCompensation => '蓝黄补偿';
+
+  @override
+  String get effectModeSuppressBlue => '抑制蓝色';
+
+  @override
+  String get effectModeHighContrast => '高对比黑白';
+
+  @override
   String get effectModeBlend => '柔和叠加';
 
   @override
@@ -130,6 +145,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get effectModeInvert => '反色查看';
+
+  @override
+  String get effectModeDeutanCompensationHint => '把容易混在一起的红绿信息重新映射，适合绿色弱或绿色盲用户先试。';
+
+  @override
+  String get effectModeProtanCompensationHint => '把难分开的偏红信息挪到更容易察觉的通道里，适合红色弱或红色盲用户先试。';
+
+  @override
+  String get effectModeTritanCompensationHint => '重新拉开蓝色和黄色的差异，适合蓝黄辨识困难时使用。';
+
+  @override
+  String get effectModeSuppressBlueHint => '整体压低页面里的蓝色成分，并保留一部分亮度，适合蓝色区域太抢眼时使用。';
+
+  @override
+  String get effectModeHighContrastHint => '尽量丢掉颜色干扰，只强化黑白明暗和轮廓，适合先看形状和数字。';
 
   @override
   String get effectModeBlendHint => '在原页上柔和叠加一层颜色，适合做细微调整。';
@@ -252,28 +282,34 @@ class AppLocalizationsZh extends AppLocalizations {
   String get closeTooltip => '关闭';
 
   @override
-  String get defaultSchemeGreenWeakName => '绿色弱辅助';
+  String get defaultSchemeGreenWeakName => '绿色弱补偿';
 
   @override
-  String get defaultSchemeGreenWeakNote => '给页面加一点暖色，帮助区分接近的绿色和棕黄色。';
+  String get defaultSchemeGreenWeakNote => '针对常见红绿混淆做颜色重映射，让接近的绿色、黄色和棕色更容易分开。';
 
   @override
-  String get defaultSchemeRedWeakName => '红色弱辅助';
+  String get defaultSchemeRedWeakName => '红色弱补偿';
 
   @override
-  String get defaultSchemeRedWeakNote => '给页面加一点冷色，帮助看清偏红区域。';
+  String get defaultSchemeRedWeakNote => '把偏红信息转到更容易察觉的颜色通道，适合红色弱先试。';
 
   @override
-  String get defaultSchemeBlueYellowWeakName => '蓝黄色弱辅助';
+  String get defaultSchemeBlueYellowWeakName => '蓝黄补偿';
 
   @override
-  String get defaultSchemeBlueYellowWeakNote => '用柔和的洋红提高冷暖色块的区分度。';
+  String get defaultSchemeBlueYellowWeakNote => '重新拉开蓝色和黄色区域的差异，适合冷暖色块分不清时使用。';
 
   @override
-  String get defaultSchemeReplaceWarmName => '暖色替换';
+  String get defaultSchemeSuppressBlueName => '抑制蓝色';
 
   @override
-  String get defaultSchemeReplaceWarmNote => '把主要颜色统一替换成暖黄色，更容易专注看明暗。';
+  String get defaultSchemeSuppressBlueNote => '整体压低偏蓝区域的存在感，适合蓝色标记过强、分散注意力时试用。';
+
+  @override
+  String get defaultSchemeHighContrastName => '高对比黑白';
+
+  @override
+  String get defaultSchemeHighContrastNote => '弱化颜色本身，只保留更强的明暗和轮廓，适合先看数字和形状。';
 
   @override
   String get defaultSchemeInvertName => '反色查看';

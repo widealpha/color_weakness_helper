@@ -442,28 +442,7 @@ class _PdfReaderPageState extends State<PdfReaderPage> {
                               height: 72,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(18),
-                                gradient: switch (activeScheme.effectMode) {
-                                  MaskEffectMode.invert => const LinearGradient(
-                                    colors: <Color>[
-                                      Color(0xFFF5F5F5),
-                                      Color(0xFF101010),
-                                    ],
-                                  ),
-                                  _ => LinearGradient(
-                                    colors: <Color>[
-                                      activeScheme.color.withValues(
-                                        alpha: activeScheme.opacity == 0
-                                            ? 0.10
-                                            : activeScheme.opacity,
-                                      ),
-                                      activeScheme.color.withValues(
-                                        alpha: activeScheme.opacity == 0
-                                            ? 0.03
-                                            : activeScheme.opacity / 2,
-                                      ),
-                                    ],
-                                  ),
-                                },
+                                gradient: schemePreviewGradient(activeScheme),
                               ),
                             ),
                             const SizedBox(height: 12),
