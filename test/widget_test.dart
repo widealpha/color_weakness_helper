@@ -4,9 +4,8 @@ import 'package:pdfrx/pdfrx.dart';
 
 import 'package:color_weakness_helper/app.dart';
 import 'package:color_weakness_helper/models/rendered_pdf_page.dart';
-import 'package:color_weakness_helper/services/mask_scheme_storage.dart';
-import 'package:color_weakness_helper/services/preferences_store.dart';
 import 'package:color_weakness_helper/services/pdf_asset_service.dart';
+import 'package:color_weakness_helper/utils/preferences_utils.dart';
 
 void main() {
   testWidgets('renders home shelf with 1th to 6th entries in Chinese', (
@@ -22,7 +21,7 @@ void main() {
     await tester.pumpWidget(
       ColorWeaknessHelperApp(
         pdfAssetService: const _FakePdfAssetService(),
-        maskSchemeStorage: const MaskSchemeStorage(store: _InMemoryStore()),
+        preferencesUtils: const _InMemoryPreferencesUtils(),
       ),
     );
 
@@ -57,7 +56,7 @@ void main() {
     await tester.pumpWidget(
       ColorWeaknessHelperApp(
         pdfAssetService: const _FakePdfAssetService(),
-        maskSchemeStorage: const MaskSchemeStorage(store: _InMemoryStore()),
+        preferencesUtils: const _InMemoryPreferencesUtils(),
       ),
     );
 
@@ -94,8 +93,8 @@ class _FakePdfAssetService extends PdfAssetService {
   }
 }
 
-class _InMemoryStore implements PreferencesStore {
-  const _InMemoryStore();
+class _InMemoryPreferencesUtils implements PreferencesUtils {
+  const _InMemoryPreferencesUtils();
 
   @override
   Future<String?> getString(String key) async => null;

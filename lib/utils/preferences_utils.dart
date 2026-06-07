@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-abstract class PreferencesStore {
+abstract class PreferencesUtils {
   Future<String?> getString(String key);
 
   Future<void> setString(String key, String value);
@@ -8,8 +8,8 @@ abstract class PreferencesStore {
   Future<void> remove(String key);
 }
 
-class SharedPreferencesStore implements PreferencesStore {
-  const SharedPreferencesStore();
+class SharedPreferencesUtils implements PreferencesUtils {
+  const SharedPreferencesUtils();
 
   SharedPreferencesAsync get _preferences => SharedPreferencesAsync();
 

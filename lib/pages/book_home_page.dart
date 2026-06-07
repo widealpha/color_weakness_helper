@@ -1,48 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../data/book_catalog.dart';
+import '../l10n/app_localizations.dart';
 import '../l10n/localization_extensions.dart';
 import '../models/pdf_book.dart';
-import '../services/mask_scheme_storage.dart';
-import '../services/pdf_asset_service.dart';
+import '../providers/book_catalog_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_panel.dart';
 import '../widgets/book_card.dart';
 import 'pdf_reader_page.dart';
 
-class BookHomePage extends StatefulWidget {
-  const BookHomePage({
-    super.key,
-    required this.pdfAssetService,
-    required this.maskSchemeStorage,
-  });
-
-  final PdfAssetService pdfAssetService;
-  final MaskSchemeStorage maskSchemeStorage;
-
-  @override
-  State<BookHomePage> createState() => _BookHomePageState();
-}
-
-class _BookHomePageState extends State<BookHomePage> {
-  late final Future<List<PdfBook>> _booksFuture = _loadBooks();
-
-  Future<List<PdfBook>> _loadBooks() async {
-    final books = await Future.wait(
-      bookCatalog.map((PdfBook book) async {
-        final available = await widget.pdfAssetService.assetExists(
-          book.assetPath,
-        );
-        return book.copyWith(isAvailable: available);
-      }),
-    );
-    return books;
-  }
+class BookHomePage extends StatelessWidget {
+  const BookHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final quickSteps = l10n.homeConventionsBody.split('\n');
+    final provider = context.watch<BookCatalogProvider>();
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -135,72 +112,7 @@ class _BookHomePageState extends State<BookHomePage> {
                         title: l10n.homeShelfPanelTitle,
                         subtitle: compact ? '' : l10n.homeShelfPanelSubtitle,
                         expandChild: true,
-                        child: FutureBuilder<List<PdfBook>>(
-                          future: _booksFuture,
-                          builder:
-                              (
-                                BuildContext context,
-                                AsyncSnapshot<List<PdfBook>> snapshot,
-                              ) {
-                                if (snapshot.connectionState !=
-                                    ConnectionState.done) {
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                }
-
-                                if (snapshot.hasError) {
-                                  return Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Text(
-                                      l10n.bookCatalogLoadFailed(
-                                        snapshot.error.toString(),
-                                      ),
-                                    ),
-                                  );
-                                }
-
-                                final books =
-                                    (snapshot.data ?? const <PdfBook>[])
-                                        .map(
-                                          (PdfBook book) =>
-                                              localizeBook(l10n, book),
-                                        )
-                                        .toList(growable: false);
-                                return SingleChildScrollView(
-                                  child: Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Wrap(
-                                      spacing: 18,
-                                      runSpacing: 18,
-                                      children: books.map((PdfBook book) {
-                                        return BookCard(
-                                          book: book,
-                                          onTap: book.isAvailable
-                                              ? () {
-                                                  Navigator.of(context).push(
-                                                    MaterialPageRoute<void>(
-                                                      builder: (_) =>
-                                                          PdfReaderPage(
-                                                            book: book,
-                                                            pdfAssetService:
-                                                                widget
-                                                                    .pdfAssetService,
-                                                            maskSchemeStorage:
-                                                                widget
-                                                                    .maskSchemeStorage,
-                                                          ),
-                                                    ),
-                                                  );
-                                                }
-                                              : null,
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ),
-                                );
-                              },
-                        ),
+                        child: _buildShelf(context, provider, l10n),
                       ),
                     ),
                   ],
@@ -208,6 +120,53 @@ class _BookHomePageState extends State<BookHomePage> {
               );
             },
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShelf(
+    BuildContext context,
+    BookCatalogProvider provider,
+    AppLocalizations l10n,
+  ) {
+    if (provider.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (provider.error != null) {
+      return Align(
+        alignment: Alignment.topLeft,
+        child: Text(
+          l10n.bookCatalogLoadFailed(provider.error.toString()),
+        ),
+      );
+    }
+
+    final books = provider.books
+        .map((PdfBook book) => localizeBook(l10n, book))
+        .toList(growable: false);
+
+    return SingleChildScrollView(
+      child: Align(
+        alignment: Alignment.topLeft,
+        child: Wrap(
+          spacing: 18,
+          runSpacing: 18,
+          children: books.map((PdfBook book) {
+            return BookCard(
+              book: book,
+              onTap: book.isAvailable
+                  ? () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => PdfReaderPage(book: book),
+                        ),
+                      );
+                    }
+                  : null,
+            );
+          }).toList(),
         ),
       ),
     );
