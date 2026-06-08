@@ -12,12 +12,7 @@ import '../models/rendered_pdf_page.dart';
 import '../services/pdf_asset_service.dart';
 import '../utils/preferences_utils.dart';
 
-enum PdfReaderErrorType {
-  openTimeout,
-  openFailed,
-  renderTimeout,
-  renderFailed,
-}
+enum PdfReaderErrorType { openTimeout, openFailed, renderTimeout, renderFailed }
 
 class PdfReaderError {
   const PdfReaderError(this.type, {this.details});
@@ -36,6 +31,7 @@ class PdfReaderProvider extends ChangeNotifier {
   }
 
   static const Duration _documentOpenTimeout = Duration(seconds: 15);
+  static const Duration _pageRenderTimeout = Duration(seconds: 30);
   static const String storageKey = 'user_mask_schemes';
 
   final PdfBook book;
@@ -50,6 +46,8 @@ class PdfReaderProvider extends ChangeNotifier {
   late double _blue;
   late double _opacity;
   late BlendMode _blendMode;
+  late MaskMatrixPass _firstMatrixPass;
+  late MaskMatrixPass _secondMatrixPass;
 
   PdfDocument? _document;
   StreamSubscription<PdfDocumentEvent>? _documentEventsSubscription;
@@ -75,6 +73,8 @@ class PdfReaderProvider extends ChangeNotifier {
   double get blue => _blue;
   double get opacity => _opacity;
   BlendMode get blendMode => _blendMode;
+  MaskMatrixPass get firstMatrixPass => _firstMatrixPass;
+  MaskMatrixPass get secondMatrixPass => _secondMatrixPass;
   RenderedPdfPage? get renderedPage => _renderedPage;
   bool get isOpeningDocument => _isOpeningDocument;
   bool get isRenderingPage => _isRenderingPage;
@@ -82,7 +82,8 @@ class PdfReaderProvider extends ChangeNotifier {
   int get currentPage => _currentPage;
   int get pageCount => _pageCount;
   PdfReaderError? get documentError => _documentError;
-  List<MaskScheme> get savedSchemes => List<MaskScheme>.unmodifiable(_savedSchemes);
+  List<MaskScheme> get savedSchemes =>
+      List<MaskScheme>.unmodifiable(_savedSchemes);
   bool get isLoadingSavedSchemes => _isLoadingSavedSchemes;
 
   Future<void> initialize() async {
@@ -111,6 +112,8 @@ class PdfReaderProvider extends ChangeNotifier {
       opacity: _opacity,
       blendMode: _blendMode,
       effectMode: _effectMode,
+      firstMatrixPass: _firstMatrixPass,
+      secondMatrixPass: _secondMatrixPass,
     );
   }
 
@@ -209,6 +212,28 @@ class PdfReaderProvider extends ChangeNotifier {
 
     _effectMode = value;
     _opacity = _opacity.clamp(0.0, effectModeMaxOpacity(value)).toDouble();
+    if (effectModeUsesMatrixPasses(value)) {
+      _firstMatrixPass = defaultFirstMatrixPass(value);
+      _secondMatrixPass = defaultSecondMatrixPass(value);
+    }
+    notifyListeners();
+  }
+
+  void setFirstMatrixPass(MaskMatrixPass value) {
+    if (_firstMatrixPass == value) {
+      return;
+    }
+
+    _firstMatrixPass = value;
+    notifyListeners();
+  }
+
+  void setSecondMatrixPass(MaskMatrixPass value) {
+    if (_secondMatrixPass == value) {
+      return;
+    }
+
+    _secondMatrixPass = value;
     notifyListeners();
   }
 
@@ -249,10 +274,9 @@ class PdfReaderProvider extends ChangeNotifier {
   }
 
   void setOpacity(double value) {
-    final nextOpacity = value.clamp(
-      0.0,
-      effectModeMaxOpacity(_effectMode),
-    ).toDouble();
+    final nextOpacity = value
+        .clamp(0.0, effectModeMaxOpacity(_effectMode))
+        .toDouble();
     if (_opacity == nextOpacity) {
       return;
     }
@@ -352,26 +376,15 @@ class PdfReaderProvider extends ChangeNotifier {
 
       _document = document;
       _pageCount = document.pages.length;
+      if (_pageCount == 0) {
+        throw StateError('PDF document has no readable pages.');
+      }
+
       _currentPage = 1;
       _documentError = null;
       _isOpeningDocument = false;
       notifyListeners();
 
-      unawaited(
-        document.loadPagesProgressively<void>(
-          onPageLoadProgress: (int _, int totalPageCount, void _) {
-            if (_isDisposed) {
-              return false;
-            }
-
-            if (totalPageCount != _pageCount) {
-              _pageCount = totalPageCount;
-              notifyListeners();
-            }
-            return true;
-          },
-        ),
-      );
       await _renderPage(_currentPage);
     } on TimeoutException {
       if (_isDisposed) {
@@ -410,10 +423,9 @@ class PdfReaderProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final page = await pdfAssetService.renderPage(
-        document: document,
-        pageNumber: pageNumber,
-      );
+      final page = await pdfAssetService
+          .renderPage(document: document, pageNumber: pageNumber)
+          .timeout(_pageRenderTimeout);
 
       // Drop stale render results when users switch pages quickly.
       if (_isDisposed || ticket != _renderTicket) {
@@ -459,6 +471,8 @@ class PdfReaderProvider extends ChangeNotifier {
     _blue = colorChannelToInt(scheme.color.b).toDouble();
     _opacity = scheme.opacity;
     _blendMode = scheme.blendMode;
+    _firstMatrixPass = scheme.firstMatrixPass;
+    _secondMatrixPass = scheme.secondMatrixPass;
   }
 
   @override

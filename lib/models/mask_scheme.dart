@@ -5,6 +5,8 @@ import '../l10n/app_localizations.dart';
 enum MaskEffectMode {
   deutanCompensation,
   protanCompensation,
+  redGreenPulse,
+  redGreenReversePulse,
   tritanCompensation,
   highContrast,
   blend,
@@ -12,14 +14,34 @@ enum MaskEffectMode {
   invert,
 }
 
+enum MaskMatrixPass {
+  deutanCompensation,
+  protanCompensation,
+  tritanCompensation,
+  deutanReverse,
+  protanReverse,
+  tritanReverse,
+}
+
 const List<MaskEffectMode> supportedMaskEffectModes = <MaskEffectMode>[
   MaskEffectMode.deutanCompensation,
   MaskEffectMode.protanCompensation,
+  MaskEffectMode.redGreenPulse,
+  MaskEffectMode.redGreenReversePulse,
   MaskEffectMode.tritanCompensation,
   MaskEffectMode.highContrast,
   MaskEffectMode.blend,
   MaskEffectMode.replace,
   MaskEffectMode.invert,
+];
+
+const List<MaskMatrixPass> supportedMaskMatrixPasses = <MaskMatrixPass>[
+  MaskMatrixPass.deutanCompensation,
+  MaskMatrixPass.protanCompensation,
+  MaskMatrixPass.tritanCompensation,
+  MaskMatrixPass.deutanReverse,
+  MaskMatrixPass.protanReverse,
+  MaskMatrixPass.tritanReverse,
 ];
 
 const List<BlendMode> supportedBlendModes = <BlendMode>[
@@ -38,6 +60,8 @@ class MaskScheme {
     required this.opacity,
     required this.blendMode,
     this.effectMode = MaskEffectMode.blend,
+    this.firstMatrixPass = MaskMatrixPass.deutanCompensation,
+    this.secondMatrixPass = MaskMatrixPass.protanCompensation,
     this.isBuiltIn = false,
   });
 
@@ -48,6 +72,8 @@ class MaskScheme {
   final double opacity;
   final BlendMode blendMode;
   final MaskEffectMode effectMode;
+  final MaskMatrixPass firstMatrixPass;
+  final MaskMatrixPass secondMatrixPass;
   final bool isBuiltIn;
 
   MaskScheme copyWith({
@@ -58,6 +84,8 @@ class MaskScheme {
     double? opacity,
     BlendMode? blendMode,
     MaskEffectMode? effectMode,
+    MaskMatrixPass? firstMatrixPass,
+    MaskMatrixPass? secondMatrixPass,
     bool? isBuiltIn,
   }) {
     return MaskScheme(
@@ -68,6 +96,8 @@ class MaskScheme {
       opacity: opacity ?? this.opacity,
       blendMode: blendMode ?? this.blendMode,
       effectMode: effectMode ?? this.effectMode,
+      firstMatrixPass: firstMatrixPass ?? this.firstMatrixPass,
+      secondMatrixPass: secondMatrixPass ?? this.secondMatrixPass,
       isBuiltIn: isBuiltIn ?? this.isBuiltIn,
     );
   }
@@ -81,6 +111,8 @@ class MaskScheme {
       'opacity': opacity,
       'blendMode': blendMode.name,
       'effectMode': effectMode.name,
+      'firstMatrixPass': firstMatrixPass.name,
+      'secondMatrixPass': secondMatrixPass.name,
     };
   }
 
@@ -89,6 +121,10 @@ class MaskScheme {
         json['blendMode'] as String? ?? BlendMode.overlay.name;
     final effectModeName =
         json['effectMode'] as String? ?? MaskEffectMode.blend.name;
+    final effectMode = supportedMaskEffectModes.firstWhere(
+      (MaskEffectMode mode) => mode.name == effectModeName,
+      orElse: () => MaskEffectMode.blend,
+    );
     return MaskScheme(
       id:
           json['id'] as String? ??
@@ -101,9 +137,14 @@ class MaskScheme {
         (BlendMode mode) => mode.name == blendModeName,
         orElse: () => BlendMode.overlay,
       ),
-      effectMode: supportedMaskEffectModes.firstWhere(
-        (MaskEffectMode mode) => mode.name == effectModeName,
-        orElse: () => MaskEffectMode.blend,
+      effectMode: effectMode,
+      firstMatrixPass: _matrixPassFromJson(
+        json['firstMatrixPass'],
+        fallback: defaultFirstMatrixPass(effectMode),
+      ),
+      secondMatrixPass: _matrixPassFromJson(
+        json['secondMatrixPass'],
+        fallback: defaultSecondMatrixPass(effectMode),
       ),
     );
   }
@@ -113,6 +154,8 @@ String effectModeLabel(AppLocalizations l10n, MaskEffectMode mode) {
   return switch (mode) {
     MaskEffectMode.deutanCompensation => l10n.effectModeDeutanCompensation,
     MaskEffectMode.protanCompensation => l10n.effectModeProtanCompensation,
+    MaskEffectMode.redGreenPulse => l10n.effectModeRedGreenPulse,
+    MaskEffectMode.redGreenReversePulse => l10n.effectModeRedGreenReversePulse,
     MaskEffectMode.tritanCompensation => l10n.effectModeTritanCompensation,
     MaskEffectMode.highContrast => l10n.effectModeHighContrast,
     MaskEffectMode.blend => l10n.effectModeBlend,
@@ -125,11 +168,25 @@ String effectModeHint(AppLocalizations l10n, MaskEffectMode mode) {
   return switch (mode) {
     MaskEffectMode.deutanCompensation => l10n.effectModeDeutanCompensationHint,
     MaskEffectMode.protanCompensation => l10n.effectModeProtanCompensationHint,
+    MaskEffectMode.redGreenPulse => l10n.effectModeRedGreenPulseHint,
+    MaskEffectMode.redGreenReversePulse =>
+      l10n.effectModeRedGreenReversePulseHint,
     MaskEffectMode.tritanCompensation => l10n.effectModeTritanCompensationHint,
     MaskEffectMode.highContrast => l10n.effectModeHighContrastHint,
     MaskEffectMode.blend => l10n.effectModeBlendHint,
     MaskEffectMode.replace => l10n.effectModeReplaceHint,
     MaskEffectMode.invert => l10n.effectModeInvertHint,
+  };
+}
+
+String matrixPassLabel(AppLocalizations l10n, MaskMatrixPass pass) {
+  return switch (pass) {
+    MaskMatrixPass.deutanCompensation => l10n.matrixPassDeutanCompensation,
+    MaskMatrixPass.protanCompensation => l10n.matrixPassProtanCompensation,
+    MaskMatrixPass.tritanCompensation => l10n.matrixPassTritanCompensation,
+    MaskMatrixPass.deutanReverse => l10n.matrixPassDeutanReverse,
+    MaskMatrixPass.protanReverse => l10n.matrixPassProtanReverse,
+    MaskMatrixPass.tritanReverse => l10n.matrixPassTritanReverse,
   };
 }
 
@@ -160,6 +217,13 @@ bool effectModeUsesOpacity(MaskEffectMode mode) {
 bool effectModeUsesBlendMode(MaskEffectMode mode) =>
     mode == MaskEffectMode.blend;
 
+bool effectModeUsesMatrixPasses(MaskEffectMode mode) {
+  return switch (mode) {
+    MaskEffectMode.redGreenPulse || MaskEffectMode.redGreenReversePulse => true,
+    _ => false,
+  };
+}
+
 double effectModeMaxOpacity(MaskEffectMode mode) {
   return switch (mode) {
     MaskEffectMode.blend => 0.65,
@@ -179,6 +243,8 @@ String schemeSummary(AppLocalizations l10n, MaskScheme scheme) {
     MaskEffectMode.tritanCompensation ||
     MaskEffectMode.highContrast =>
       '${effectModeLabel(l10n, scheme.effectMode)} · ${maskOpacityLabel(scheme.opacity)}',
+    MaskEffectMode.redGreenPulse || MaskEffectMode.redGreenReversePulse =>
+      '${effectModeLabel(l10n, scheme.effectMode)} · ${matrixPassLabel(l10n, scheme.firstMatrixPass)} + ${matrixPassLabel(l10n, scheme.secondMatrixPass)} · ${maskOpacityLabel(scheme.opacity)}',
     MaskEffectMode.invert => effectModeLabel(l10n, scheme.effectMode),
   };
 }
@@ -206,6 +272,30 @@ Gradient schemePreviewGradient(MaskScheme scheme) {
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     ),
+    MaskEffectMode.redGreenPulse => LinearGradient(
+      colors: <Color>[
+        matrixPassPreviewColor(
+          scheme.firstMatrixPass,
+        ).withValues(alpha: previewStrength),
+        matrixPassPreviewColor(
+          scheme.secondMatrixPass,
+        ).withValues(alpha: previewStrength),
+      ],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    ),
+    MaskEffectMode.redGreenReversePulse => LinearGradient(
+      colors: <Color>[
+        matrixPassPreviewColor(
+          scheme.firstMatrixPass,
+        ).withValues(alpha: previewStrength),
+        matrixPassPreviewColor(
+          scheme.secondMatrixPass,
+        ).withValues(alpha: previewStrength),
+      ],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    ),
     MaskEffectMode.tritanCompensation => LinearGradient(
       colors: <Color>[
         const Color(0xFFEF476F).withValues(alpha: previewStrength),
@@ -224,7 +314,9 @@ Gradient schemePreviewGradient(MaskScheme scheme) {
     ),
     MaskEffectMode.blend || MaskEffectMode.replace => LinearGradient(
       colors: <Color>[
-        scheme.color.withValues(alpha: scheme.opacity == 0 ? 0.10 : scheme.opacity),
+        scheme.color.withValues(
+          alpha: scheme.opacity == 0 ? 0.10 : scheme.opacity,
+        ),
         scheme.color.withValues(
           alpha: scheme.opacity == 0 ? 0.03 : scheme.opacity / 2,
         ),
@@ -233,6 +325,57 @@ Gradient schemePreviewGradient(MaskScheme scheme) {
       end: Alignment.bottomRight,
     ),
   };
+}
+
+MaskMatrixPass defaultFirstMatrixPass(MaskEffectMode mode) {
+  return switch (mode) {
+    MaskEffectMode.redGreenReversePulse => MaskMatrixPass.protanCompensation,
+    _ => MaskMatrixPass.deutanCompensation,
+  };
+}
+
+MaskMatrixPass defaultSecondMatrixPass(MaskEffectMode mode) {
+  return switch (mode) {
+    MaskEffectMode.redGreenReversePulse => MaskMatrixPass.deutanReverse,
+    _ => MaskMatrixPass.protanCompensation,
+  };
+}
+
+List<double> matrixPassColorMatrix(MaskMatrixPass pass) {
+  return switch (pass) {
+    MaskMatrixPass.deutanCompensation => deutanCompensationColorMatrix,
+    MaskMatrixPass.protanCompensation => protanCompensationColorMatrix,
+    MaskMatrixPass.tritanCompensation => tritanCompensationColorMatrix,
+    MaskMatrixPass.deutanReverse => deutanReverseColorMatrix,
+    MaskMatrixPass.protanReverse => protanReverseColorMatrix,
+    MaskMatrixPass.tritanReverse => tritanReverseColorMatrix,
+  };
+}
+
+ColorFilter matrixPassColorFilter(MaskMatrixPass pass) {
+  return ColorFilter.matrix(matrixPassColorMatrix(pass));
+}
+
+Color matrixPassPreviewColor(MaskMatrixPass pass) {
+  return switch (pass) {
+    MaskMatrixPass.deutanCompensation => const Color(0xFF2A9D8F),
+    MaskMatrixPass.protanCompensation => const Color(0xFFE76F51),
+    MaskMatrixPass.tritanCompensation => const Color(0xFF3A86FF),
+    MaskMatrixPass.deutanReverse => const Color(0xFF5E548E),
+    MaskMatrixPass.protanReverse => const Color(0xFF2F6FAD),
+    MaskMatrixPass.tritanReverse => const Color(0xFFBC6C25),
+  };
+}
+
+MaskMatrixPass _matrixPassFromJson(
+  Object? value, {
+  required MaskMatrixPass fallback,
+}) {
+  final name = value as String?;
+  return supportedMaskMatrixPasses.firstWhere(
+    (MaskMatrixPass pass) => pass.name == name,
+    orElse: () => fallback,
+  );
 }
 
 const List<double> invertColorMatrix = <double>[
@@ -258,10 +401,13 @@ const List<double> invertColorMatrix = <double>[
   0,
 ];
 
+// Matrix approximation of daltonization: simulate severe CVD, calculate the
+// lost RGB error, then move that error into channels that are usually easier to
+// distinguish for the target deficiency. Strength is applied in the preview UI.
 const List<double> deutanCompensationColorMatrix = <double>[
-  0.885,
-  0.115,
-  0,
+  1.436619,
+  -0.631397,
+  0.194779,
   0,
   0,
   0,
@@ -269,9 +415,32 @@ const List<double> deutanCompensationColorMatrix = <double>[
   0,
   0,
   0,
-  -0.49,
-  0.19,
-  1.3,
+  -0.184239,
+  0.186309,
+  0.99793,
+  0,
+  0,
+  0,
+  0,
+  0,
+  1,
+  0,
+];
+
+const List<double> deutanReverseColorMatrix = <double>[
+  0.563381,
+  0.631397,
+  -0.194779,
+  0,
+  0,
+  0,
+  1,
+  0,
+  0,
+  0,
+  0.184239,
+  -0.186309,
+  1.00207,
   0,
   0,
   0,
@@ -287,14 +456,37 @@ const List<double> protanCompensationColorMatrix = <double>[
   0,
   0,
   0,
-  -0.255,
-  1.255,
+  0.478897,
+  0.476911,
+  0.044192,
+  0,
+  0,
+  0.597282,
+  -0.688692,
+  1.09141,
   0,
   0,
   0,
-  0.303331,
-  -0.545001,
-  1.24167,
+  0,
+  0,
+  1,
+  0,
+];
+
+const List<double> protanReverseColorMatrix = <double>[
+  1,
+  0,
+  0,
+  0,
+  0,
+  -0.478897,
+  1.523089,
+  -0.044192,
+  0,
+  0,
+  -0.597282,
+  0.688692,
+  0.90859,
   0,
   0,
   0,
@@ -305,14 +497,37 @@ const List<double> protanCompensationColorMatrix = <double>[
 ];
 
 const List<double> tritanCompensationColorMatrix = <double>[
-  1.05,
-  -0.3825,
-  0.3325,
+  0.741159,
+  -0.407208,
+  0.666049,
+  0,
+  0,
+  0.075098,
+  0.585234,
+  0.339668,
   0,
   0,
   0,
-  1.23417,
-  -0.23417,
+  0,
+  1,
+  0,
+  0,
+  0,
+  0,
+  0,
+  1,
+  0,
+];
+
+const List<double> tritanReverseColorMatrix = <double>[
+  1.258841,
+  0.407208,
+  -0.666049,
+  0,
+  0,
+  -0.075098,
+  1.414766,
+  -0.339668,
   0,
   0,
   0,

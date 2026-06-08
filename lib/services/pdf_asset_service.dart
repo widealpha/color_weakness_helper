@@ -8,7 +8,7 @@ import '../models/rendered_pdf_page.dart';
 class PdfAssetService {
   const PdfAssetService();
 
-  static Future<void> _serializedOperations = Future<void>.value();
+  static Future<void> _documentOperations = Future<void>.value();
 
   Future<bool> assetExists(String assetPath) async {
     try {
@@ -19,20 +19,31 @@ class PdfAssetService {
     }
   }
 
-  Future<PdfDocument> openDocument(String assetPath) => _runSerialized(
-    () => PdfDocument.openAsset(assetPath, useProgressiveLoading: true),
+  Future<PdfDocument> openDocument(String assetPath) => _runDocumentOp(
+    () => PdfDocument.openAsset(assetPath, useProgressiveLoading: false),
   );
 
   Future<void> closeDocument(PdfDocument document) =>
-      _runSerialized(() => document.dispose());
+      _runDocumentOp(() => document.dispose());
 
   Future<RenderedPdfPage> renderPage({
     required PdfDocument document,
     required int pageNumber,
     double scale = 2.2,
+    double maxTextureSide = 2400,
     int backgroundColor = 0xFFFDFBF7,
     Duration pageLoadTimeout = const Duration(seconds: 12),
-  }) => _runSerialized(() async {
+    Duration renderTimeout = const Duration(seconds: 20),
+  }) async {
+    if (pageNumber < 1 || pageNumber > document.pages.length) {
+      throw RangeError.range(
+        pageNumber,
+        1,
+        document.pages.length,
+        'pageNumber',
+      );
+    }
+
     final page = document.pages[pageNumber - 1];
     final loadedPage = page.isLoaded
         ? page
@@ -41,19 +52,27 @@ class PdfAssetService {
       throw TimeoutException('Timed out while loading PDF page $pageNumber.');
     }
 
-    final targetWidth = loadedPage.width * scale;
-    final targetHeight = loadedPage.height * scale;
-    final rendered = await loadedPage.render(
-      fullWidth: targetWidth,
-      fullHeight: targetHeight,
-      backgroundColor: backgroundColor,
+    final targetScale = resolveRenderScale(
+      width: loadedPage.width,
+      height: loadedPage.height,
+      preferredScale: scale,
+      maxTextureSide: maxTextureSide,
     );
+    final targetWidth = loadedPage.width * targetScale;
+    final targetHeight = loadedPage.height * targetScale;
+    final rendered = await loadedPage
+        .render(
+          fullWidth: targetWidth,
+          fullHeight: targetHeight,
+          backgroundColor: backgroundColor,
+        )
+        .timeout(renderTimeout);
     if (rendered == null) {
       throw StateError('Failed to render PDF page $pageNumber.');
     }
 
     try {
-      final image = await rendered.createImage();
+      final image = await rendered.createImage().timeout(renderTimeout);
 
       return RenderedPdfPage(
         pageNumber: pageNumber,
@@ -64,11 +83,11 @@ class PdfAssetService {
     } finally {
       rendered.dispose();
     }
-  });
+  }
 
-  Future<T> _runSerialized<T>(Future<T> Function() action) {
+  Future<T> _runDocumentOp<T>(Future<T> Function() action) {
     final completer = Completer<T>();
-    _serializedOperations = _serializedOperations
+    _documentOperations = _documentOperations
         .catchError((Object _, StackTrace stackTrace) {})
         .then((_) async {
           try {
@@ -78,5 +97,23 @@ class PdfAssetService {
           }
         });
     return completer.future;
+  }
+
+  static double resolveRenderScale({
+    required double width,
+    required double height,
+    required double preferredScale,
+    required double maxTextureSide,
+  }) {
+    if (width <= 0 || height <= 0) {
+      throw StateError('PDF page has an invalid size: $width x $height.');
+    }
+
+    final largestSide = width > height ? width : height;
+    final cappedScale = maxTextureSide / largestSide;
+    final nextScale = preferredScale < cappedScale
+        ? preferredScale
+        : cappedScale;
+    return nextScale < 0.8 ? 0.8 : nextScale;
   }
 }

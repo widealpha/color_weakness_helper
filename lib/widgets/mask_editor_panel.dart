@@ -20,11 +20,15 @@ class MaskEditorPanel extends StatelessWidget {
     required this.customGreen,
     required this.customBlue,
     required this.customEffectMode,
+    required this.customFirstMatrixPass,
+    required this.customSecondMatrixPass,
     required this.customBlendMode,
     required this.onModeChanged,
     required this.onDefaultSchemeSelected,
     required this.onStartCustomFromDefault,
     required this.onEffectModeChanged,
+    required this.onFirstMatrixPassChanged,
+    required this.onSecondMatrixPassChanged,
     required this.onBlendModeChanged,
     required this.onRedChanged,
     required this.onGreenChanged,
@@ -47,11 +51,15 @@ class MaskEditorPanel extends StatelessWidget {
   final double customGreen;
   final double customBlue;
   final MaskEffectMode customEffectMode;
+  final MaskMatrixPass customFirstMatrixPass;
+  final MaskMatrixPass customSecondMatrixPass;
   final BlendMode customBlendMode;
   final ValueChanged<EditorMode> onModeChanged;
   final ValueChanged<int> onDefaultSchemeSelected;
   final VoidCallback onStartCustomFromDefault;
   final ValueChanged<MaskEffectMode> onEffectModeChanged;
+  final ValueChanged<MaskMatrixPass> onFirstMatrixPassChanged;
+  final ValueChanged<MaskMatrixPass> onSecondMatrixPassChanged;
   final ValueChanged<BlendMode> onBlendModeChanged;
   final ValueChanged<double> onRedChanged;
   final ValueChanged<double> onGreenChanged;
@@ -108,10 +116,16 @@ class MaskEditorPanel extends StatelessWidget {
     final l10n = context.l10n;
     final scheme = defaultSchemes[selectedDefaultSchemeIndex];
     final stats = <Widget>[
-      _statChip(context, l10n.schemeStatMode, effectModeLabel(l10n, scheme.effectMode)),
+      _statChip(
+        context,
+        l10n.schemeStatMode,
+        effectModeLabel(l10n, scheme.effectMode),
+      ),
     ];
     if (effectModeUsesColor(scheme.effectMode)) {
-      stats.add(_statChip(context, l10n.schemeStatColor, maskHex(scheme.color)));
+      stats.add(
+        _statChip(context, l10n.schemeStatColor, maskHex(scheme.color)),
+      );
     }
     if (effectModeUsesOpacity(scheme.effectMode)) {
       stats.add(
@@ -140,7 +154,18 @@ class MaskEditorPanel extends StatelessWidget {
           runSpacing: 12,
           children: List<Widget>.generate(defaultSchemes.length, (int index) {
             return ChoiceChip(
-              label: Text(defaultSchemes[index].name),
+              avatar: Container(
+                width: 18,
+                height: 18,
+                decoration: BoxDecoration(
+                  gradient: schemePreviewGradient(defaultSchemes[index]),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              label: Text(
+                defaultSchemes[index].name,
+                overflow: TextOverflow.ellipsis,
+              ),
               selected: selectedDefaultSchemeIndex == index,
               onSelected: (_) => onDefaultSchemeSelected(index),
             );
@@ -159,11 +184,7 @@ class MaskEditorPanel extends StatelessWidget {
             children: <Widget>[
               Text(scheme.note, style: const TextStyle(height: 1.45)),
               const SizedBox(height: 12),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: stats,
-              ),
+              Wrap(spacing: 10, runSpacing: 10, children: stats),
             ],
           ),
         ),
@@ -187,6 +208,8 @@ class MaskEditorPanel extends StatelessWidget {
       opacity: customOpacity,
       blendMode: customBlendMode,
       effectMode: customEffectMode,
+      firstMatrixPass: customFirstMatrixPass,
+      secondMatrixPass: customSecondMatrixPass,
     );
     return Column(
       key: const ValueKey<String>('custom-editor'),
@@ -210,11 +233,7 @@ class MaskEditorPanel extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  schemeSummary(l10n, previewScheme),
-                ),
-              ),
+              Expanded(child: Text(schemeSummary(l10n, previewScheme))),
             ],
           ),
         ),
@@ -248,6 +267,46 @@ class MaskEditorPanel extends StatelessWidget {
             height: 1.4,
           ),
         ),
+        if (effectModeUsesMatrixPasses(customEffectMode)) ...<Widget>[
+          const SizedBox(height: 16),
+          LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              final vertical = constraints.maxWidth < 560;
+              final selectors = <Widget>[
+                _matrixPassDropdown(
+                  context,
+                  label: l10n.matrixPassFirstLabel,
+                  value: customFirstMatrixPass,
+                  onChanged: onFirstMatrixPassChanged,
+                ),
+                _matrixPassDropdown(
+                  context,
+                  label: l10n.matrixPassSecondLabel,
+                  value: customSecondMatrixPass,
+                  onChanged: onSecondMatrixPassChanged,
+                ),
+              ];
+
+              if (vertical) {
+                return Column(
+                  children: <Widget>[
+                    selectors[0],
+                    const SizedBox(height: 12),
+                    selectors[1],
+                  ],
+                );
+              }
+
+              return Row(
+                children: <Widget>[
+                  Expanded(child: selectors[0]),
+                  const SizedBox(width: 12),
+                  Expanded(child: selectors[1]),
+                ],
+              );
+            },
+          ),
+        ],
         if (effectModeUsesBlendMode(customEffectMode)) ...<Widget>[
           const SizedBox(height: 16),
           DropdownButtonFormField<BlendMode>(
@@ -330,6 +389,36 @@ class MaskEditorPanel extends StatelessWidget {
     );
   }
 
+  Widget _matrixPassDropdown(
+    BuildContext context, {
+    required String label,
+    required MaskMatrixPass value,
+    required ValueChanged<MaskMatrixPass> onChanged,
+  }) {
+    final l10n = context.l10n;
+    return DropdownButtonFormField<MaskMatrixPass>(
+      key: ValueKey<String>('matrix-pass-$label-${value.name}'),
+      initialValue: value,
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+      ),
+      items: supportedMaskMatrixPasses
+          .map(
+            (MaskMatrixPass pass) => DropdownMenuItem<MaskMatrixPass>(
+              value: pass,
+              child: Text(matrixPassLabel(l10n, pass)),
+            ),
+          )
+          .toList(),
+      onChanged: (MaskMatrixPass? nextValue) {
+        if (nextValue != null) {
+          onChanged(nextValue);
+        }
+      },
+    );
+  }
+
   Widget _buildSavedSchemesSection(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final l10n = context.l10n;
@@ -388,7 +477,9 @@ class MaskEditorPanel extends StatelessWidget {
                           const SizedBox(height: 3),
                           Text(
                             schemeSummary(l10n, scheme),
-                            style: TextStyle(color: colorScheme.onSurfaceVariant),
+                            style: TextStyle(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
                           ),
                         ],
                       ),
@@ -457,10 +548,7 @@ class MaskEditorPanel extends StatelessWidget {
         children: <Widget>[
           Text(
             label,
-            style: TextStyle(
-              fontSize: 11,
-              color: colorScheme.onSurfaceVariant,
-            ),
+            style: TextStyle(fontSize: 11, color: colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: 2),
           Text(value, style: const TextStyle(fontWeight: FontWeight.w700)),

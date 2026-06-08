@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../l10n/localization_extensions.dart';
@@ -244,9 +246,7 @@ class PagePreviewPanel extends StatelessWidget {
     }
 
     if (result < 1 || result > pageCount) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.invalidPageNumber(pageCount))),
       );
       return;
@@ -335,56 +335,73 @@ class PagePreviewPanel extends StatelessWidget {
     }
 
     return switch (mask.effectMode) {
-      MaskEffectMode.blend => mask.opacity <= 0
-          ? _buildPageImage(page)
-          : ColorFiltered(
-              colorFilter: ColorFilter.mode(
-                mask.color.withValues(alpha: mask.opacity),
-                mask.blendMode,
-              ),
-              child: _buildPageImage(page),
-            ),
-      MaskEffectMode.replace => mask.opacity <= 0
-          ? _buildPageImage(page)
-          : Stack(
-              fit: StackFit.expand,
-              children: <Widget>[
-                _buildPageImage(page),
-                Opacity(
-                  opacity: mask.opacity,
-                  child: ColorFiltered(
-                    colorFilter: ColorFilter.matrix(
-                      replacementColorMatrix(mask.color),
-                    ),
-                    child: _buildPageImage(page),
-                  ),
+      MaskEffectMode.blend =>
+        mask.opacity <= 0
+            ? _buildPageImage(page)
+            : ColorFiltered(
+                colorFilter: ColorFilter.mode(
+                  mask.color.withValues(alpha: mask.opacity),
+                  mask.blendMode,
                 ),
-              ],
-            ),
+                child: _buildPageImage(page),
+              ),
+      MaskEffectMode.replace =>
+        mask.opacity <= 0
+            ? _buildPageImage(page)
+            : Stack(
+                fit: StackFit.expand,
+                children: <Widget>[
+                  _buildPageImage(page),
+                  Opacity(
+                    opacity: mask.opacity,
+                    child: ColorFiltered(
+                      colorFilter: ColorFilter.matrix(
+                        replacementColorMatrix(mask.color),
+                      ),
+                      child: _buildPageImage(page),
+                    ),
+                  ),
+                ],
+              ),
       MaskEffectMode.deutanCompensation => _buildMatrixEffectPreview(
-          page,
-          const ColorFilter.matrix(deutanCompensationColorMatrix),
-          mask.opacity,
-        ),
+        page,
+        const ColorFilter.matrix(deutanCompensationColorMatrix),
+        mask.opacity,
+      ),
       MaskEffectMode.protanCompensation => _buildMatrixEffectPreview(
-          page,
-          const ColorFilter.matrix(protanCompensationColorMatrix),
-          mask.opacity,
-        ),
+        page,
+        const ColorFilter.matrix(protanCompensationColorMatrix),
+        mask.opacity,
+      ),
+      MaskEffectMode.redGreenPulse => _AlternatingMatrixPairPreview(
+        page: page,
+        strength: mask.opacity,
+        firstFilter: matrixPassColorFilter(mask.firstMatrixPass),
+        secondFilter: matrixPassColorFilter(mask.secondMatrixPass),
+        switchInterval: const Duration(milliseconds: 400),
+        imageBuilder: _buildPageImage,
+      ),
+      MaskEffectMode.redGreenReversePulse => _CombinedMatrixPairPreview(
+        page: page,
+        strength: mask.opacity,
+        firstFilter: matrixPassColorFilter(mask.firstMatrixPass),
+        secondFilter: matrixPassColorFilter(mask.secondMatrixPass),
+        imageBuilder: _buildPageImage,
+      ),
       MaskEffectMode.tritanCompensation => _buildMatrixEffectPreview(
-          page,
-          const ColorFilter.matrix(tritanCompensationColorMatrix),
-          mask.opacity,
-        ),
+        page,
+        const ColorFilter.matrix(tritanCompensationColorMatrix),
+        mask.opacity,
+      ),
       MaskEffectMode.highContrast => _buildMatrixEffectPreview(
-          page,
-          const ColorFilter.matrix(highContrastMonochromeColorMatrix),
-          mask.opacity,
-        ),
+        page,
+        const ColorFilter.matrix(highContrastMonochromeColorMatrix),
+        mask.opacity,
+      ),
       MaskEffectMode.invert => ColorFiltered(
-          colorFilter: const ColorFilter.matrix(invertColorMatrix),
-          child: _buildPageImage(page),
-        ),
+        colorFilter: const ColorFilter.matrix(invertColorMatrix),
+        child: _buildPageImage(page),
+      ),
     };
   }
 
@@ -425,5 +442,146 @@ class PagePreviewPanel extends StatelessWidget {
       fit: BoxFit.contain,
       filterQuality: FilterQuality.high,
     );
+  }
+}
+
+class _CombinedMatrixPairPreview extends StatelessWidget {
+  const _CombinedMatrixPairPreview({
+    required this.page,
+    required this.strength,
+    required this.firstFilter,
+    required this.secondFilter,
+    required this.imageBuilder,
+  });
+
+  final RenderedPdfPage page;
+  final double strength;
+  final ColorFilter firstFilter;
+  final ColorFilter secondFilter;
+  final Widget Function(RenderedPdfPage page) imageBuilder;
+
+  @override
+  Widget build(BuildContext context) {
+    if (strength <= 0) {
+      return imageBuilder(page);
+    }
+
+    final layerOpacity = (strength * 0.62).clamp(0.0, 1.0).toDouble();
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        imageBuilder(page),
+        Opacity(
+          opacity: layerOpacity,
+          child: ColorFiltered(
+            colorFilter: firstFilter,
+            child: imageBuilder(page),
+          ),
+        ),
+        Opacity(
+          opacity: layerOpacity,
+          child: ColorFiltered(
+            colorFilter: secondFilter,
+            child: imageBuilder(page),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AlternatingMatrixPairPreview extends StatefulWidget {
+  const _AlternatingMatrixPairPreview({
+    required this.page,
+    required this.strength,
+    required this.firstFilter,
+    required this.secondFilter,
+    required this.switchInterval,
+    required this.imageBuilder,
+  });
+
+  final RenderedPdfPage page;
+  final double strength;
+  final ColorFilter firstFilter;
+  final ColorFilter secondFilter;
+  final Duration switchInterval;
+  final Widget Function(RenderedPdfPage page) imageBuilder;
+
+  @override
+  State<_AlternatingMatrixPairPreview> createState() =>
+      _AlternatingMatrixPairPreviewState();
+}
+
+class _AlternatingMatrixPairPreviewState
+    extends State<_AlternatingMatrixPairPreview> {
+  Timer? _timer;
+  bool _showSecondPass = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  @override
+  void didUpdateWidget(_AlternatingMatrixPairPreview oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.strength <= 0) {
+      _timer?.cancel();
+      _timer = null;
+      return;
+    }
+
+    if (oldWidget.switchInterval != widget.switchInterval) {
+      _timer?.cancel();
+      _timer = null;
+    }
+
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.strength <= 0) {
+      return widget.imageBuilder(widget.page);
+    }
+
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        widget.imageBuilder(widget.page),
+        Opacity(
+          opacity: widget.strength,
+          child: ColorFiltered(
+            colorFilter: _showSecondPass
+                ? widget.secondFilter
+                : widget.firstFilter,
+            child: widget.imageBuilder(widget.page),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _startTimer() {
+    if (widget.strength <= 0 || _timer != null) {
+      return;
+    }
+
+    _timer = Timer.periodic(widget.switchInterval, (_) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _showSecondPass = !_showSecondPass;
+      });
+    });
   }
 }

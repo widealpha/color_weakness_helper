@@ -86,8 +86,10 @@ class _FakePdfAssetService extends PdfAssetService {
     required PdfDocument document,
     required int pageNumber,
     double scale = 2.2,
+    double maxTextureSide = 2400,
     int backgroundColor = 0xFFFDFBF7,
     Duration pageLoadTimeout = const Duration(seconds: 12),
+    Duration renderTimeout = const Duration(seconds: 20),
   }) {
     throw UnimplementedError();
   }

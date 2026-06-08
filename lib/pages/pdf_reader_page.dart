@@ -81,9 +81,7 @@ class _PdfReaderView extends StatelessWidget {
           );
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(book.title),
-      ),
+      appBar: AppBar(title: Text(book.title)),
       body: Container(
         decoration: BoxDecoration(
           gradient: AppTheme.pageBackgroundGradient(context),
@@ -209,6 +207,8 @@ class _PdfReaderView extends StatelessWidget {
                       customGreen: provider.green,
                       customBlue: provider.blue,
                       customEffectMode: provider.effectMode,
+                      customFirstMatrixPass: provider.firstMatrixPass,
+                      customSecondMatrixPass: provider.secondMatrixPass,
                       customBlendMode: provider.blendMode,
                       onModeChanged: provider.setMode,
                       onDefaultSchemeSelected: provider.selectDefaultScheme,
@@ -218,6 +218,8 @@ class _PdfReaderView extends StatelessWidget {
                         );
                       },
                       onEffectModeChanged: provider.setEffectMode,
+                      onFirstMatrixPassChanged: provider.setFirstMatrixPass,
+                      onSecondMatrixPassChanged: provider.setSecondMatrixPass,
                       onBlendModeChanged: provider.setBlendMode,
                       onRedChanged: provider.setRed,
                       onGreenChanged: provider.setGreen,
@@ -229,7 +231,9 @@ class _PdfReaderView extends StatelessWidget {
                       },
                       onLoadSavedScheme: provider.loadSavedScheme,
                       onDeleteSavedScheme: (String schemeId) {
-                        unawaited(_deleteSavedScheme(context, provider, schemeId));
+                        unawaited(
+                          _deleteSavedScheme(context, provider, schemeId),
+                        );
                       },
                     );
 
@@ -304,15 +308,12 @@ class _PdfReaderView extends StatelessWidget {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(context.l10n.readerSchemeDeleted)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(context.l10n.readerSchemeDeleted)));
   }
 
-  String? _buildErrorMessage(
-    BuildContext context,
-    PdfReaderProvider provider,
-  ) {
+  String? _buildErrorMessage(BuildContext context, PdfReaderProvider provider) {
     final error = provider.documentError ?? provider.pageError;
     if (error == null) {
       return null;
@@ -320,12 +321,13 @@ class _PdfReaderView extends StatelessWidget {
 
     return switch (error.type) {
       PdfReaderErrorType.openTimeout => context.l10n.readerOpenPdfTimedOut,
-      PdfReaderErrorType.openFailed =>
-        context.l10n.readerOpenPdfFailed(error.details ?? ''),
-      PdfReaderErrorType.renderTimeout =>
-        context.l10n.readerRenderPageTimedOut,
-      PdfReaderErrorType.renderFailed =>
-        context.l10n.readerRenderPageFailed(error.details ?? ''),
+      PdfReaderErrorType.openFailed => context.l10n.readerOpenPdfFailed(
+        error.details ?? '',
+      ),
+      PdfReaderErrorType.renderTimeout => context.l10n.readerRenderPageTimedOut,
+      PdfReaderErrorType.renderFailed => context.l10n.readerRenderPageFailed(
+        error.details ?? '',
+      ),
     };
   }
 }

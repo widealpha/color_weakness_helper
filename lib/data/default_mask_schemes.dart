@@ -6,35 +6,61 @@ import '../models/mask_scheme.dart';
 const List<MaskScheme> defaultMaskSchemes = <MaskScheme>[
   MaskScheme(
     id: 'builtin-green-weak',
-    name: 'Green-weak Compensation',
+    name: 'Deutan Daltonize',
     note:
-        'Re-map confusing red-green ranges so nearby green, yellow, and brown details become easier to tell apart.',
-    color: Color(0xFF8ECAE6),
-    opacity: 0.72,
+        'Simulate green-channel loss, then move the lost difference into red and blue contrast for common red-green confusion.',
+    color: Color(0xFF2A9D8F),
+    opacity: 0.84,
     blendMode: BlendMode.overlay,
     effectMode: MaskEffectMode.deutanCompensation,
     isBuiltIn: true,
   ),
   MaskScheme(
     id: 'builtin-red-weak',
-    name: 'Red-weak Compensation',
+    name: 'Protan Daltonize',
     note:
-        'Shift hard-to-separate red tones into channels that stay easier to notice.',
-    color: Color(0xFF4CC9F0),
-    opacity: 0.72,
+        'Reconstruct red-heavy information through green and blue contrast, useful when reds look dark or disappear.',
+    color: Color(0xFFE76F51),
+    opacity: 0.86,
     blendMode: BlendMode.softLight,
     effectMode: MaskEffectMode.protanCompensation,
     isBuiltIn: true,
   ),
   MaskScheme(
     id: 'builtin-blue-yellow-weak',
-    name: 'Blue-yellow Compensation',
+    name: 'Tritan Daltonize',
     note:
-        'Re-balance blue and yellow confusion so cool and warm areas separate more clearly.',
-    color: Color(0xFFEF476F),
-    opacity: 0.72,
+        'Separate blue-yellow confusion by transferring lost blue-channel contrast into red and green cues.',
+    color: Color(0xFF3A86FF),
+    opacity: 0.78,
     blendMode: BlendMode.softLight,
     effectMode: MaskEffectMode.tritanCompensation,
+    isBuiltIn: true,
+  ),
+  MaskScheme(
+    id: 'builtin-red-green-pulse',
+    name: 'Red-Green Fast Blink',
+    note:
+        'Switches protan and deutan compensation every 0.4 seconds so red-green differences become easier to notice through temporal contrast.',
+    color: Color(0xFF2A9D8F),
+    opacity: 0.82,
+    blendMode: BlendMode.overlay,
+    effectMode: MaskEffectMode.redGreenPulse,
+    firstMatrixPass: MaskMatrixPass.deutanCompensation,
+    secondMatrixPass: MaskMatrixPass.protanCompensation,
+    isBuiltIn: true,
+  ),
+  MaskScheme(
+    id: 'builtin-red-green-reverse-pulse',
+    name: 'Red + Reverse Green',
+    note:
+        'Combines protan compensation with an inverse deutan pass to exaggerate red-green separation without temporal switching.',
+    color: Color(0xFF5E548E),
+    opacity: 0.78,
+    blendMode: BlendMode.overlay,
+    effectMode: MaskEffectMode.redGreenReversePulse,
+    firstMatrixPass: MaskMatrixPass.protanCompensation,
+    secondMatrixPass: MaskMatrixPass.deutanReverse,
     isBuiltIn: true,
   ),
   MaskScheme(
@@ -90,6 +116,14 @@ MaskScheme localizeMaskScheme(AppLocalizations l10n, MaskScheme scheme) {
     'builtin-blue-yellow-weak' => scheme.copyWith(
       name: l10n.defaultSchemeBlueYellowWeakName,
       note: l10n.defaultSchemeBlueYellowWeakNote,
+    ),
+    'builtin-red-green-pulse' => scheme.copyWith(
+      name: l10n.defaultSchemeRedGreenPulseName,
+      note: l10n.defaultSchemeRedGreenPulseNote,
+    ),
+    'builtin-red-green-reverse-pulse' => scheme.copyWith(
+      name: l10n.defaultSchemeRedGreenReversePulseName,
+      note: l10n.defaultSchemeRedGreenReversePulseNote,
     ),
     'builtin-high-contrast' => scheme.copyWith(
       name: l10n.defaultSchemeHighContrastName,
