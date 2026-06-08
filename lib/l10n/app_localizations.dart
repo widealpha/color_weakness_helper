@@ -302,26 +302,32 @@ abstract class AppLocalizations {
   /// No description provided for @effectModeDeutanCompensation.
   ///
   /// In en, this message translates to:
-  /// **'Green-weak Compensation'**
+  /// **'Deutan Daltonize'**
   String get effectModeDeutanCompensation;
 
   /// No description provided for @effectModeProtanCompensation.
   ///
   /// In en, this message translates to:
-  /// **'Red-weak Compensation'**
+  /// **'Protan Daltonize'**
   String get effectModeProtanCompensation;
+
+  /// No description provided for @effectModeRedGreenPulse.
+  ///
+  /// In en, this message translates to:
+  /// **'Red-green Fast Blink'**
+  String get effectModeRedGreenPulse;
+
+  /// No description provided for @effectModeRedGreenReversePulse.
+  ///
+  /// In en, this message translates to:
+  /// **'Two-mode Static Combine'**
+  String get effectModeRedGreenReversePulse;
 
   /// No description provided for @effectModeTritanCompensation.
   ///
   /// In en, this message translates to:
-  /// **'Blue-yellow Compensation'**
+  /// **'Tritan Daltonize'**
   String get effectModeTritanCompensation;
-
-  /// No description provided for @effectModeSuppressBlue.
-  ///
-  /// In en, this message translates to:
-  /// **'Suppress Blue'**
-  String get effectModeSuppressBlue;
 
   /// No description provided for @effectModeHighContrast.
   ///
@@ -350,26 +356,32 @@ abstract class AppLocalizations {
   /// No description provided for @effectModeDeutanCompensationHint.
   ///
   /// In en, this message translates to:
-  /// **'Re-maps confusing red-green ranges so nearby green, yellow, and brown details are easier to separate.'**
+  /// **'Simulates green-channel loss first, then moves the lost difference into red and blue contrast for common red-green confusion.'**
   String get effectModeDeutanCompensationHint;
 
   /// No description provided for @effectModeProtanCompensationHint.
   ///
   /// In en, this message translates to:
-  /// **'Shifts hard-to-see red information into channels that remain easier to notice.'**
+  /// **'Simulates red-channel loss first, then redirects red differences into green and blue cues when reds look dark or disappear.'**
   String get effectModeProtanCompensationHint;
+
+  /// No description provided for @effectModeRedGreenPulseHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Hard-switches protan and deutan compensation every 0.4 seconds, using temporal contrast to reveal red-green differences.'**
+  String get effectModeRedGreenPulseHint;
+
+  /// No description provided for @effectModeRedGreenReversePulseHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Statically combines any two weak-mode passes or reverse difference passes to test stronger spatial separation.'**
+  String get effectModeRedGreenReversePulseHint;
 
   /// No description provided for @effectModeTritanCompensationHint.
   ///
   /// In en, this message translates to:
-  /// **'Pulls blue and yellow ranges farther apart when cool and warm areas blur together.'**
+  /// **'Simulates blue-channel loss first, then redirects blue-yellow differences into red-green cues.'**
   String get effectModeTritanCompensationHint;
-
-  /// No description provided for @effectModeSuppressBlueHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Turns down blue-heavy areas across the page while keeping some brightness, useful when blue markings dominate the view.'**
-  String get effectModeSuppressBlueHint;
 
   /// No description provided for @effectModeHighContrastHint.
   ///
@@ -394,6 +406,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Directly inverts the page colors for a stronger contrast view.'**
   String get effectModeInvertHint;
+
+  /// No description provided for @matrixPassFirstLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'First weak mode'**
+  String get matrixPassFirstLabel;
+
+  /// No description provided for @matrixPassSecondLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Second weak mode'**
+  String get matrixPassSecondLabel;
+
+  /// No description provided for @matrixPassDeutanCompensation.
+  ///
+  /// In en, this message translates to:
+  /// **'Deutan enhance'**
+  String get matrixPassDeutanCompensation;
+
+  /// No description provided for @matrixPassProtanCompensation.
+  ///
+  /// In en, this message translates to:
+  /// **'Protan enhance'**
+  String get matrixPassProtanCompensation;
+
+  /// No description provided for @matrixPassTritanCompensation.
+  ///
+  /// In en, this message translates to:
+  /// **'Tritan enhance'**
+  String get matrixPassTritanCompensation;
+
+  /// No description provided for @matrixPassDeutanReverse.
+  ///
+  /// In en, this message translates to:
+  /// **'Reverse deutan difference'**
+  String get matrixPassDeutanReverse;
+
+  /// No description provided for @matrixPassProtanReverse.
+  ///
+  /// In en, this message translates to:
+  /// **'Reverse protan difference'**
+  String get matrixPassProtanReverse;
+
+  /// No description provided for @matrixPassTritanReverse.
+  ///
+  /// In en, this message translates to:
+  /// **'Reverse tritan difference'**
+  String get matrixPassTritanReverse;
 
   /// No description provided for @schemeStatColor.
   ///
@@ -608,50 +668,62 @@ abstract class AppLocalizations {
   /// No description provided for @defaultSchemeGreenWeakName.
   ///
   /// In en, this message translates to:
-  /// **'Green-weak Compensation'**
+  /// **'Deutan Enhance'**
   String get defaultSchemeGreenWeakName;
 
   /// No description provided for @defaultSchemeGreenWeakNote.
   ///
   /// In en, this message translates to:
-  /// **'Re-maps common red-green confusion so nearby greens, yellows, and browns separate more clearly.'**
+  /// **'Uses a daltonization-style pass: simulate green-channel loss, then move the lost difference into clearer red-blue contrast.'**
   String get defaultSchemeGreenWeakNote;
 
   /// No description provided for @defaultSchemeRedWeakName.
   ///
   /// In en, this message translates to:
-  /// **'Red-weak Compensation'**
+  /// **'Protan Enhance'**
   String get defaultSchemeRedWeakName;
 
   /// No description provided for @defaultSchemeRedWeakNote.
   ///
   /// In en, this message translates to:
-  /// **'Moves red-heavy information into channels that are easier to notice.'**
+  /// **'Redistributes red-related differences into green-blue cues, useful when reds look dark or red-green details merge.'**
   String get defaultSchemeRedWeakNote;
+
+  /// No description provided for @defaultSchemeRedGreenPulseName.
+  ///
+  /// In en, this message translates to:
+  /// **'Red-green Fast Blink'**
+  String get defaultSchemeRedGreenPulseName;
+
+  /// No description provided for @defaultSchemeRedGreenPulseNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Hard-switches protan and deutan enhancement every 0.4 seconds so color changes become stronger temporal contrast.'**
+  String get defaultSchemeRedGreenPulseNote;
+
+  /// No description provided for @defaultSchemeRedGreenReversePulseName.
+  ///
+  /// In en, this message translates to:
+  /// **'Red + Reverse Green'**
+  String get defaultSchemeRedGreenReversePulseName;
+
+  /// No description provided for @defaultSchemeRedGreenReversePulseNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Statically combines protan enhancement with an inverse deutan difference pass to test stronger red-green separation.'**
+  String get defaultSchemeRedGreenReversePulseNote;
 
   /// No description provided for @defaultSchemeBlueYellowWeakName.
   ///
   /// In en, this message translates to:
-  /// **'Blue-yellow Compensation'**
+  /// **'Tritan Enhance'**
   String get defaultSchemeBlueYellowWeakName;
 
   /// No description provided for @defaultSchemeBlueYellowWeakNote.
   ///
   /// In en, this message translates to:
-  /// **'Re-balances blue and yellow ranges so cool and warm areas separate more clearly.'**
+  /// **'Redirects blue-yellow differences into red-green cues so cool and warm blocks can separate more clearly.'**
   String get defaultSchemeBlueYellowWeakNote;
-
-  /// No description provided for @defaultSchemeSuppressBlueName.
-  ///
-  /// In en, this message translates to:
-  /// **'Suppress Blue'**
-  String get defaultSchemeSuppressBlueName;
-
-  /// No description provided for @defaultSchemeSuppressBlueNote.
-  ///
-  /// In en, this message translates to:
-  /// **'Tones down blue-heavy regions when they are too dominant or distracting.'**
-  String get defaultSchemeSuppressBlueNote;
 
   /// No description provided for @defaultSchemeHighContrastName.
   ///

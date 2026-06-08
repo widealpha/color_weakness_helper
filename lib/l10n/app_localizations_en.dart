@@ -123,16 +123,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get effectModeFieldLabel => 'Effect mode';
 
   @override
-  String get effectModeDeutanCompensation => 'Green-weak Compensation';
+  String get effectModeDeutanCompensation => 'Deutan Daltonize';
 
   @override
-  String get effectModeProtanCompensation => 'Red-weak Compensation';
+  String get effectModeProtanCompensation => 'Protan Daltonize';
 
   @override
-  String get effectModeTritanCompensation => 'Blue-yellow Compensation';
+  String get effectModeRedGreenPulse => 'Red-green Fast Blink';
 
   @override
-  String get effectModeSuppressBlue => 'Suppress Blue';
+  String get effectModeRedGreenReversePulse => 'Two-mode Static Combine';
+
+  @override
+  String get effectModeTritanCompensation => 'Tritan Daltonize';
 
   @override
   String get effectModeHighContrast => 'High-contrast Mono';
@@ -147,16 +150,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get effectModeInvert => 'Invert Colors';
 
   @override
-  String get effectModeDeutanCompensationHint => 'Re-maps confusing red-green ranges so nearby green, yellow, and brown details are easier to separate.';
+  String get effectModeDeutanCompensationHint => 'Simulates green-channel loss first, then moves the lost difference into red and blue contrast for common red-green confusion.';
 
   @override
-  String get effectModeProtanCompensationHint => 'Shifts hard-to-see red information into channels that remain easier to notice.';
+  String get effectModeProtanCompensationHint => 'Simulates red-channel loss first, then redirects red differences into green and blue cues when reds look dark or disappear.';
 
   @override
-  String get effectModeTritanCompensationHint => 'Pulls blue and yellow ranges farther apart when cool and warm areas blur together.';
+  String get effectModeRedGreenPulseHint => 'Hard-switches protan and deutan compensation every 0.4 seconds, using temporal contrast to reveal red-green differences.';
 
   @override
-  String get effectModeSuppressBlueHint => 'Turns down blue-heavy areas across the page while keeping some brightness, useful when blue markings dominate the view.';
+  String get effectModeRedGreenReversePulseHint => 'Statically combines any two weak-mode passes or reverse difference passes to test stronger spatial separation.';
+
+  @override
+  String get effectModeTritanCompensationHint => 'Simulates blue-channel loss first, then redirects blue-yellow differences into red-green cues.';
 
   @override
   String get effectModeHighContrastHint => 'Drops most color information and pushes black-white contrast harder when you only need clear shapes.';
@@ -169,6 +175,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get effectModeInvertHint => 'Directly inverts the page colors for a stronger contrast view.';
+
+  @override
+  String get matrixPassFirstLabel => 'First weak mode';
+
+  @override
+  String get matrixPassSecondLabel => 'Second weak mode';
+
+  @override
+  String get matrixPassDeutanCompensation => 'Deutan enhance';
+
+  @override
+  String get matrixPassProtanCompensation => 'Protan enhance';
+
+  @override
+  String get matrixPassTritanCompensation => 'Tritan enhance';
+
+  @override
+  String get matrixPassDeutanReverse => 'Reverse deutan difference';
+
+  @override
+  String get matrixPassProtanReverse => 'Reverse protan difference';
+
+  @override
+  String get matrixPassTritanReverse => 'Reverse tritan difference';
 
   @override
   String get schemeStatColor => 'Color';
@@ -282,28 +312,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get closeTooltip => 'Close';
 
   @override
-  String get defaultSchemeGreenWeakName => 'Green-weak Compensation';
+  String get defaultSchemeGreenWeakName => 'Deutan Enhance';
 
   @override
-  String get defaultSchemeGreenWeakNote => 'Re-maps common red-green confusion so nearby greens, yellows, and browns separate more clearly.';
+  String get defaultSchemeGreenWeakNote => 'Uses a daltonization-style pass: simulate green-channel loss, then move the lost difference into clearer red-blue contrast.';
 
   @override
-  String get defaultSchemeRedWeakName => 'Red-weak Compensation';
+  String get defaultSchemeRedWeakName => 'Protan Enhance';
 
   @override
-  String get defaultSchemeRedWeakNote => 'Moves red-heavy information into channels that are easier to notice.';
+  String get defaultSchemeRedWeakNote => 'Redistributes red-related differences into green-blue cues, useful when reds look dark or red-green details merge.';
 
   @override
-  String get defaultSchemeBlueYellowWeakName => 'Blue-yellow Compensation';
+  String get defaultSchemeRedGreenPulseName => 'Red-green Fast Blink';
 
   @override
-  String get defaultSchemeBlueYellowWeakNote => 'Re-balances blue and yellow ranges so cool and warm areas separate more clearly.';
+  String get defaultSchemeRedGreenPulseNote => 'Hard-switches protan and deutan enhancement every 0.4 seconds so color changes become stronger temporal contrast.';
 
   @override
-  String get defaultSchemeSuppressBlueName => 'Suppress Blue';
+  String get defaultSchemeRedGreenReversePulseName => 'Red + Reverse Green';
 
   @override
-  String get defaultSchemeSuppressBlueNote => 'Tones down blue-heavy regions when they are too dominant or distracting.';
+  String get defaultSchemeRedGreenReversePulseNote => 'Statically combines protan enhancement with an inverse deutan difference pass to test stronger red-green separation.';
+
+  @override
+  String get defaultSchemeBlueYellowWeakName => 'Tritan Enhance';
+
+  @override
+  String get defaultSchemeBlueYellowWeakNote => 'Redirects blue-yellow differences into red-green cues so cool and warm blocks can separate more clearly.';
 
   @override
   String get defaultSchemeHighContrastName => 'High-contrast Mono';

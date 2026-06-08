@@ -123,16 +123,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get effectModeFieldLabel => '效果模式';
 
   @override
-  String get effectModeDeutanCompensation => '绿弱补偿';
+  String get effectModeDeutanCompensation => '绿弱补偿增强';
 
   @override
-  String get effectModeProtanCompensation => '红弱补偿';
+  String get effectModeProtanCompensation => '红弱补偿增强';
 
   @override
-  String get effectModeTritanCompensation => '蓝黄补偿';
+  String get effectModeRedGreenPulse => '红绿快速交替';
 
   @override
-  String get effectModeSuppressBlue => '抑制蓝色';
+  String get effectModeRedGreenReversePulse => '双弱静态组合';
+
+  @override
+  String get effectModeTritanCompensation => '蓝黄补偿增强';
 
   @override
   String get effectModeHighContrast => '高对比黑白';
@@ -147,16 +150,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get effectModeInvert => '反色查看';
 
   @override
-  String get effectModeDeutanCompensationHint => '把容易混在一起的红绿信息重新映射，适合绿色弱或绿色盲用户先试。';
+  String get effectModeDeutanCompensationHint => '先模拟绿色通道缺失，再把丢失的差异转移到红色和蓝色对比里，适合常见红绿混淆先试。';
 
   @override
-  String get effectModeProtanCompensationHint => '把难分开的偏红信息挪到更容易察觉的通道里，适合红色弱或红色盲用户先试。';
+  String get effectModeProtanCompensationHint => '先模拟红色通道缺失，再把红色差异转移到绿色和蓝色线索里，适合红色偏暗或消失时使用。';
 
   @override
-  String get effectModeTritanCompensationHint => '重新拉开蓝色和黄色的差异，适合蓝黄辨识困难时使用。';
+  String get effectModeRedGreenPulseHint => '每 0.4 秒在红弱增强和绿弱增强之间硬切换，利用时间对比帮助看出红绿差异。';
 
   @override
-  String get effectModeSuppressBlueHint => '整体压低页面里的蓝色成分，并保留一部分亮度，适合蓝色区域太抢眼时使用。';
+  String get effectModeRedGreenReversePulseHint => '静态叠加任意两个弱模式或反向差分，用更强的空间反差测试色块区域是否更容易分离。';
+
+  @override
+  String get effectModeTritanCompensationHint => '先模拟蓝色通道缺失，再把蓝黄差异转移到红绿线索里，适合蓝黄区域难分时使用。';
 
   @override
   String get effectModeHighContrastHint => '尽量丢掉颜色干扰，只强化黑白明暗和轮廓，适合先看形状和数字。';
@@ -169,6 +175,30 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get effectModeInvertHint => '直接反转页面颜色，适合需要更强反差时使用。';
+
+  @override
+  String get matrixPassFirstLabel => '第一弱模式';
+
+  @override
+  String get matrixPassSecondLabel => '第二弱模式';
+
+  @override
+  String get matrixPassDeutanCompensation => '绿弱增强';
+
+  @override
+  String get matrixPassProtanCompensation => '红弱增强';
+
+  @override
+  String get matrixPassTritanCompensation => '蓝黄增强';
+
+  @override
+  String get matrixPassDeutanReverse => '反向绿弱差分';
+
+  @override
+  String get matrixPassProtanReverse => '反向红弱差分';
+
+  @override
+  String get matrixPassTritanReverse => '反向蓝黄差分';
 
   @override
   String get schemeStatColor => '颜色';
@@ -282,28 +312,34 @@ class AppLocalizationsZh extends AppLocalizations {
   String get closeTooltip => '关闭';
 
   @override
-  String get defaultSchemeGreenWeakName => '绿色弱补偿';
+  String get defaultSchemeGreenWeakName => '绿弱增强';
 
   @override
-  String get defaultSchemeGreenWeakNote => '针对常见红绿混淆做颜色重映射，让接近的绿色、黄色和棕色更容易分开。';
+  String get defaultSchemeGreenWeakNote => '使用 Daltonization 思路：模拟绿色通道损失，并把丢失差异转移到更容易分辨的红蓝对比。';
 
   @override
-  String get defaultSchemeRedWeakName => '红色弱补偿';
+  String get defaultSchemeRedWeakName => '红弱增强';
 
   @override
-  String get defaultSchemeRedWeakNote => '把偏红信息转到更容易察觉的颜色通道，适合红色弱先试。';
+  String get defaultSchemeRedWeakNote => '把红色相关差异重分配到绿蓝线索，适合红色偏暗、红绿难分时优先尝试。';
 
   @override
-  String get defaultSchemeBlueYellowWeakName => '蓝黄补偿';
+  String get defaultSchemeRedGreenPulseName => '红绿快速交替';
 
   @override
-  String get defaultSchemeBlueYellowWeakNote => '重新拉开蓝色和黄色区域的差异，适合冷暖色块分不清时使用。';
+  String get defaultSchemeRedGreenPulseNote => '每 0.4 秒硬切一次红弱增强和绿弱增强，让色块变化变成更明显的时间对比。';
 
   @override
-  String get defaultSchemeSuppressBlueName => '抑制蓝色';
+  String get defaultSchemeRedGreenReversePulseName => '红弱+反向绿弱';
 
   @override
-  String get defaultSchemeSuppressBlueNote => '整体压低偏蓝区域的存在感，适合蓝色标记过强、分散注意力时试用。';
+  String get defaultSchemeRedGreenReversePulseNote => '静态叠加红弱增强和绿弱反向差分，适合测试更强红绿分离是否更清楚。';
+
+  @override
+  String get defaultSchemeBlueYellowWeakName => '蓝黄增强';
+
+  @override
+  String get defaultSchemeBlueYellowWeakNote => '把蓝黄色差转移到红绿线索，帮助冷暖色块和图谱数字更容易分离。';
 
   @override
   String get defaultSchemeHighContrastName => '高对比黑白';
