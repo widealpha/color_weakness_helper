@@ -78,6 +78,11 @@ void main() {
     );
   });
 
+  test('pdfx background color is formatted as an opaque hex color', () {
+    expect(PdfAssetService.formatPdfxBackgroundColor(0xFFFDFBF7), '#FDFBF7');
+    expect(PdfAssetService.formatPdfxBackgroundColor(0x12345678), '#345678');
+  });
+
   test('saves, reloads and deletes custom schemes', () async {
     final preferencesUtils = _MemoryPreferencesUtils();
 

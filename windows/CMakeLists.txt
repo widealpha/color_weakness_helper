@@ -52,6 +52,10 @@ add_subdirectory(${FLUTTER_MANAGED_DIR})
 # Application build; see runner/CMakeLists.txt.
 add_subdirectory("runner")
 
+# pdfx downloads PDFium through an older third-party CMake template.
+# Keep this before generated_plugins.cmake so the plugin subprocess sees it.
+set(CMAKE_POLICY_VERSION_MINIMUM "3.5" CACHE STRING "" FORCE)
+set(ENV{CMAKE_POLICY_VERSION_MINIMUM} "3.5")
 
 # Generated plugin build rules, which manage building the plugins and adding
 # them to the application.
@@ -106,6 +110,3 @@ install(DIRECTORY "${PROJECT_BUILD_DIR}/${FLUTTER_ASSET_DIR_NAME}"
 install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"
   CONFIGURATIONS Profile;Release
   COMPONENT Runtime)
-
-
-set(PDFIUM_VERSION "4638" CACHE STRING "")

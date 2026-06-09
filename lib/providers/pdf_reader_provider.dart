@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:pdfrx/pdfrx.dart';
+import 'package:pdfx/pdfx.dart';
 
 import '../data/default_mask_schemes.dart';
 import '../models/editor_mode.dart';
@@ -50,7 +50,6 @@ class PdfReaderProvider extends ChangeNotifier {
   late MaskMatrixPass _secondMatrixPass;
 
   PdfDocument? _document;
-  StreamSubscription<PdfDocumentEvent>? _documentEventsSubscription;
   RenderedPdfPage? _renderedPage;
   bool _isOpeningDocument = true;
   bool _isRenderingPage = false;
@@ -294,8 +293,6 @@ class PdfReaderProvider extends ChangeNotifier {
   }
 
   Future<void> retryOpenDocument() async {
-    await _documentEventsSubscription?.cancel();
-    _documentEventsSubscription = null;
     _disposeRenderedPage();
     final document = _document;
     _document = null;
@@ -380,25 +377,14 @@ class PdfReaderProvider extends ChangeNotifier {
         return;
       }
 
-      await _documentEventsSubscription?.cancel();
-      _documentEventsSubscription = document.events.listen((_) {
-        if (_isDisposed) {
-          return;
-        }
-
-        final nextPageCount = document.pages.length;
-        if (nextPageCount != _pageCount) {
-          _pageCount = nextPageCount;
-          notifyListeners();
-        }
-      });
-
-      _document = document;
-      _pageCount = document.pages.length;
-      if (_pageCount == 0) {
+      final pageCount = document.pagesCount;
+      if (pageCount == 0) {
+        await pdfAssetService.closeDocument(document);
         throw StateError('PDF document has no readable pages.');
       }
 
+      _document = document;
+      _pageCount = pageCount;
       _currentPage = 1;
       _documentError = null;
       _isOpeningDocument = false;
@@ -497,8 +483,6 @@ class PdfReaderProvider extends ChangeNotifier {
   @override
   void dispose() {
     _isDisposed = true;
-    unawaited(_documentEventsSubscription?.cancel());
-    _documentEventsSubscription = null;
     _disposeRenderedPage();
     final document = _document;
     _document = null;

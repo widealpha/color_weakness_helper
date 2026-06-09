@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pdfrx/pdfrx.dart';
+import 'package:pdfx/pdfx.dart';
 
 import 'package:color_weakness_helper/app.dart';
 import 'package:color_weakness_helper/models/rendered_pdf_page.dart';
