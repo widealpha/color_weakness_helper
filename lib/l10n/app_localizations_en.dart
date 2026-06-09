@@ -72,6 +72,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get readerOpenPdfTimedOut => 'Opening the document is taking too long. Please go back and try again.';
 
   @override
+  String get retryOpenPdfButton => 'Retry opening';
+
+  @override
   String readerRenderPageFailed(Object error) {
     return 'Failed to render the current page: $error';
   }

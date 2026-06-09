@@ -293,6 +293,24 @@ class PdfReaderProvider extends ChangeNotifier {
     await _renderPage(pageNumber);
   }
 
+  Future<void> retryOpenDocument() async {
+    await _documentEventsSubscription?.cancel();
+    _documentEventsSubscription = null;
+    _disposeRenderedPage();
+    final document = _document;
+    _document = null;
+    _pageCount = 0;
+    _currentPage = 1;
+    _documentError = null;
+    _pageError = null;
+    _isRenderingPage = false;
+    if (document != null) {
+      unawaited(pdfAssetService.closeDocument(document));
+    }
+
+    await _openDocument();
+  }
+
   Future<void> loadSavedSchemes() async {
     try {
       final schemes = await _readStoredSchemes();
@@ -353,9 +371,10 @@ class PdfReaderProvider extends ChangeNotifier {
       _pageCount = 0;
       notifyListeners();
 
-      final document = await pdfAssetService
-          .openDocument(book.assetPath)
-          .timeout(_documentOpenTimeout);
+      final document = await pdfAssetService.openDocument(
+        book.assetPath,
+        timeout: _documentOpenTimeout,
+      );
       if (_isDisposed) {
         await pdfAssetService.closeDocument(document);
         return;

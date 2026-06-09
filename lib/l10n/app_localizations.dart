@@ -209,6 +209,12 @@ abstract class AppLocalizations {
   /// **'Opening the document is taking too long. Please go back and try again.'**
   String get readerOpenPdfTimedOut;
 
+  /// No description provided for @retryOpenPdfButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry opening'**
+  String get retryOpenPdfButton;
+
   /// No description provided for @readerRenderPageFailed.
   ///
   /// In en, this message translates to:

@@ -192,6 +192,11 @@ class _PdfReaderView extends StatelessWidget {
                       onJumpToPage: (int pageNumber) {
                         unawaited(provider.showPage(pageNumber));
                       },
+                      onRetryOpenDocument: provider.documentError == null
+                          ? null
+                          : () {
+                              unawaited(provider.retryOpenDocument());
+                            },
                     );
 
                     final controls = MaskEditorPanel(

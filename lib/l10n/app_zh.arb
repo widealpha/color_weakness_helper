@@ -36,6 +36,7 @@
     }
   },
   "readerOpenPdfTimedOut": "打开时间过长，请返回后重试。",
+  "retryOpenPdfButton": "重试打开",
   "readerRenderPageFailed": "当前页渲染失败：{error}",
   "@readerRenderPageFailed": {
     "placeholders": {

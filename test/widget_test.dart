@@ -77,7 +77,10 @@ class _FakePdfAssetService extends PdfAssetService {
   }
 
   @override
-  Future<PdfDocument> openDocument(String assetPath) {
+  Future<PdfDocument> openDocument(
+    String assetPath, {
+    Duration timeout = const Duration(seconds: 15),
+  }) {
     throw UnimplementedError();
   }
 

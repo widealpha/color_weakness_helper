@@ -36,6 +36,7 @@
     }
   },
   "readerOpenPdfTimedOut": "Opening the document is taking too long. Please go back and try again.",
+  "retryOpenPdfButton": "Retry opening",
   "readerRenderPageFailed": "Failed to render the current page: {error}",
   "@readerRenderPageFailed": {
     "placeholders": {

@@ -20,6 +20,7 @@ class PagePreviewPanel extends StatelessWidget {
     required this.onPreviousPage,
     required this.onNextPage,
     required this.onJumpToPage,
+    this.onRetryOpenDocument,
     this.errorMessage,
   });
 
@@ -32,6 +33,7 @@ class PagePreviewPanel extends StatelessWidget {
   final VoidCallback? onPreviousPage;
   final VoidCallback? onNextPage;
   final ValueChanged<int> onJumpToPage;
+  final VoidCallback? onRetryOpenDocument;
   final String? errorMessage;
 
   @override
@@ -83,7 +85,17 @@ class PagePreviewPanel extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           if (errorMessage != null)
-            _messageCard(context, errorMessage!)
+            _messageCard(
+              context,
+              errorMessage!,
+              action: onRetryOpenDocument == null
+                  ? null
+                  : FilledButton.tonalIcon(
+                      onPressed: onRetryOpenDocument,
+                      icon: const Icon(Icons.refresh),
+                      label: Text(l10n.retryOpenPdfButton),
+                    ),
+            )
           else if (isOpeningDocument || isLoading)
             const AspectRatio(
               aspectRatio: 4 / 3,
@@ -317,7 +329,7 @@ class PagePreviewPanel extends StatelessWidget {
     );
   }
 
-  Widget _messageCard(BuildContext context, String message) {
+  Widget _messageCard(BuildContext context, String message, {Widget? action}) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
@@ -325,7 +337,13 @@ class PagePreviewPanel extends StatelessWidget {
         color: AppTheme.errorSurface(context),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Text(message),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(message),
+          if (action != null) ...<Widget>[const SizedBox(height: 12), action],
+        ],
+      ),
     );
   }
 

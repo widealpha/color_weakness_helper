@@ -72,6 +72,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get readerOpenPdfTimedOut => '打开时间过长，请返回后重试。';
 
   @override
+  String get retryOpenPdfButton => '重试打开';
+
+  @override
   String readerRenderPageFailed(Object error) {
     return '当前页渲染失败：$error';
   }
