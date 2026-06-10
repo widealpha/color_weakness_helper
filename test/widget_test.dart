@@ -8,6 +8,13 @@ import 'package:color_weakness_helper/services/pdf_asset_service.dart';
 import 'package:color_weakness_helper/utils/preferences_utils.dart';
 
 void main() {
+  tearDown(() {
+    final binding = TestWidgetsFlutterBinding.ensureInitialized();
+    binding.platformDispatcher.clearLocaleTestValue();
+    binding.platformDispatcher.clearLocalesTestValue();
+    binding.platformDispatcher.clearPlatformBrightnessTestValue();
+  });
+
   testWidgets('renders home shelf with 1th to 6th entries in Chinese', (
     WidgetTester tester,
   ) async {
@@ -65,6 +72,52 @@ void main() {
     expect(find.text('Color Weakness Bookshelf'), findsOneWidget);
     expect(find.text('Ready'), findsNWidgets(5));
     expect(find.text('Missing'), findsOneWidget);
+  });
+
+  testWidgets('home shelf adapts to narrow Android-sized viewport', (
+    WidgetTester tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(320, 720));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    tester.binding.platformDispatcher.localeTestValue = const Locale('zh');
+    tester.binding.platformDispatcher.localesTestValue = const <Locale>[
+      Locale('zh'),
+    ];
+
+    await tester.pumpWidget(
+      ColorWeaknessHelperApp(
+        pdfAssetService: const _FakePdfAssetService(),
+        preferencesUtils: const _InMemoryPreferencesUtils(),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('色弱辅助书架'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('home shelf keeps responsive layout on wide viewport', (
+    WidgetTester tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    tester.binding.platformDispatcher.localeTestValue = const Locale('en');
+    tester.binding.platformDispatcher.localesTestValue = const <Locale>[
+      Locale('en'),
+    ];
+
+    await tester.pumpWidget(
+      ColorWeaknessHelperApp(
+        pdfAssetService: const _FakePdfAssetService(),
+        preferencesUtils: const _InMemoryPreferencesUtils(),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('Color Weakness Bookshelf'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }
 

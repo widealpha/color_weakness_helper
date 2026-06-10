@@ -79,25 +79,7 @@ class MaskEditorPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SegmentedButton<EditorMode>(
-            showSelectedIcon: false,
-            segments: <ButtonSegment<EditorMode>>[
-              ButtonSegment(
-                value: EditorMode.preset,
-                icon: Icon(Icons.visibility_outlined),
-                label: Text(l10n.presetModeLabel),
-              ),
-              ButtonSegment(
-                value: EditorMode.custom,
-                icon: Icon(Icons.palette_outlined),
-                label: Text(l10n.customBlendModeLabel),
-              ),
-            ],
-            selected: <EditorMode>{mode},
-            onSelectionChanged: (Set<EditorMode> selected) {
-              onModeChanged(selected.first);
-            },
-          ),
+          _buildModeSelector(context),
           const SizedBox(height: 18),
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
@@ -149,27 +131,39 @@ class MaskEditorPanel extends StatelessWidget {
       key: const ValueKey<String>('preset-editor'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: List<Widget>.generate(defaultSchemes.length, (int index) {
-            return ChoiceChip(
-              avatar: Container(
-                width: 18,
-                height: 18,
-                decoration: BoxDecoration(
-                  gradient: schemePreviewGradient(defaultSchemes[index]),
-                  shape: BoxShape.circle,
-                ),
-              ),
-              label: Text(
-                defaultSchemes[index].name,
-                overflow: TextOverflow.ellipsis,
-              ),
-              selected: selectedDefaultSchemeIndex == index,
-              onSelected: (_) => onDefaultSchemeSelected(index),
+        LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            final maxChipWidth = constraints.maxWidth < 420
+                ? constraints.maxWidth
+                : 220.0;
+            return Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: List<Widget>.generate(defaultSchemes.length, (
+                int index,
+              ) {
+                return ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: maxChipWidth),
+                  child: ChoiceChip(
+                    avatar: Container(
+                      width: 18,
+                      height: 18,
+                      decoration: BoxDecoration(
+                        gradient: schemePreviewGradient(defaultSchemes[index]),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    label: Text(
+                      defaultSchemes[index].name,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    selected: selectedDefaultSchemeIndex == index,
+                    onSelected: (_) => onDefaultSchemeSelected(index),
+                  ),
+                );
+              }),
             );
-          }),
+          },
         ),
         const SizedBox(height: 16),
         Container(
@@ -189,10 +183,17 @@ class MaskEditorPanel extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        FilledButton.tonalIcon(
-          onPressed: onStartCustomFromDefault,
-          icon: const Icon(Icons.tune),
-          label: Text(l10n.startCustomFromPresetButton),
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton.tonalIcon(
+            onPressed: onStartCustomFromDefault,
+            icon: const Icon(Icons.tune),
+            label: Text(
+              l10n.startCustomFromPresetButton,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ),
       ],
     );
@@ -240,6 +241,7 @@ class MaskEditorPanel extends StatelessWidget {
         const SizedBox(height: 16),
         DropdownButtonFormField<MaskEffectMode>(
           key: ValueKey<MaskEffectMode>(customEffectMode),
+          isExpanded: true,
           initialValue: customEffectMode,
           decoration: InputDecoration(
             labelText: l10n.effectModeFieldLabel,
@@ -249,7 +251,10 @@ class MaskEditorPanel extends StatelessWidget {
               .map(
                 (MaskEffectMode mode) => DropdownMenuItem<MaskEffectMode>(
                   value: mode,
-                  child: Text(effectModeLabel(l10n, mode)),
+                  child: Text(
+                    effectModeLabel(l10n, mode),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               )
               .toList(),
@@ -311,6 +316,7 @@ class MaskEditorPanel extends StatelessWidget {
           const SizedBox(height: 16),
           DropdownButtonFormField<BlendMode>(
             key: ValueKey<BlendMode>(customBlendMode),
+            isExpanded: true,
             initialValue: customBlendMode,
             decoration: InputDecoration(
               labelText: l10n.blendModeFieldLabel,
@@ -320,7 +326,10 @@ class MaskEditorPanel extends StatelessWidget {
                 .map(
                   (BlendMode mode) => DropdownMenuItem<BlendMode>(
                     value: mode,
-                    child: Text(blendModeLabel(l10n, mode)),
+                    child: Text(
+                      blendModeLabel(l10n, mode),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 )
                 .toList(),
@@ -364,28 +373,108 @@ class MaskEditorPanel extends StatelessWidget {
             onChanged: onOpacityChanged,
           ),
         const SizedBox(height: 8),
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: <Widget>[
-            FilledButton.icon(
-              onPressed: onSaveCustomScheme,
-              icon: const Icon(Icons.save_outlined),
-              label: Text(l10n.saveMySchemeButton),
+        _buildCustomActions(context),
+      ],
+    );
+  }
+
+  Widget _buildModeSelector(BuildContext context) {
+    final l10n = context.l10n;
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final compact = constraints.maxWidth < 360;
+        return SegmentedButton<EditorMode>(
+          showSelectedIcon: false,
+          segments: <ButtonSegment<EditorMode>>[
+            ButtonSegment(
+              value: EditorMode.preset,
+              icon: Tooltip(
+                message: l10n.presetModeLabel,
+                child: const Icon(Icons.visibility_outlined),
+              ),
+              label: compact
+                  ? const SizedBox.shrink()
+                  : Text(
+                      l10n.presetModeLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
             ),
-            FilledButton.tonalIcon(
-              onPressed: onStartCustomFromDefault,
-              icon: const Icon(Icons.copy_all_outlined),
-              label: Text(l10n.loadCurrentPresetButton),
-            ),
-            TextButton.icon(
-              onPressed: onResetCustom,
-              icon: const Icon(Icons.refresh),
-              label: Text(l10n.resetCustomButton),
+            ButtonSegment(
+              value: EditorMode.custom,
+              icon: Tooltip(
+                message: l10n.customBlendModeLabel,
+                child: const Icon(Icons.palette_outlined),
+              ),
+              label: compact
+                  ? const SizedBox.shrink()
+                  : Text(
+                      l10n.customBlendModeLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
             ),
           ],
-        ),
-      ],
+          selected: <EditorMode>{mode},
+          onSelectionChanged: (Set<EditorMode> selected) {
+            onModeChanged(selected.first);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildCustomActions(BuildContext context) {
+    final l10n = context.l10n;
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final compact = constraints.maxWidth < 420;
+        final actions = <Widget>[
+          FilledButton.icon(
+            onPressed: onSaveCustomScheme,
+            icon: const Icon(Icons.save_outlined),
+            label: Text(
+              l10n.saveMySchemeButton,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          FilledButton.tonalIcon(
+            onPressed: onStartCustomFromDefault,
+            icon: const Icon(Icons.copy_all_outlined),
+            label: Text(
+              l10n.loadCurrentPresetButton,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          TextButton.icon(
+            onPressed: onResetCustom,
+            icon: const Icon(Icons.refresh),
+            label: Text(
+              l10n.resetCustomButton,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ];
+
+        if (compact) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: actions
+                .map(
+                  (Widget action) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: action,
+                  ),
+                )
+                .toList(),
+          );
+        }
+
+        return Wrap(spacing: 12, runSpacing: 12, children: actions);
+      },
     );
   }
 
@@ -398,6 +487,7 @@ class MaskEditorPanel extends StatelessWidget {
     final l10n = context.l10n;
     return DropdownButtonFormField<MaskMatrixPass>(
       key: ValueKey<String>('matrix-pass-$label-${value.name}'),
+      isExpanded: true,
       initialValue: value,
       decoration: InputDecoration(
         labelText: label,
@@ -407,7 +497,10 @@ class MaskEditorPanel extends StatelessWidget {
           .map(
             (MaskMatrixPass pass) => DropdownMenuItem<MaskMatrixPass>(
               value: pass,
-              child: Text(matrixPassLabel(l10n, pass)),
+              child: Text(
+                matrixPassLabel(l10n, pass),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           )
           .toList(),
@@ -448,42 +541,49 @@ class MaskEditorPanel extends StatelessWidget {
         else
           Column(
             children: savedSchemes.map((MaskScheme scheme) {
-              return Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: AppTheme.mutedSurface(context),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      width: 18,
-                      height: 18,
-                      decoration: BoxDecoration(
-                        gradient: schemePreviewGradient(scheme),
-                        shape: BoxShape.circle,
+              return LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  final compact = constraints.maxWidth < 360;
+                  final schemeInfo = Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        width: 18,
+                        height: 18,
+                        margin: const EdgeInsets.only(top: 2),
+                        decoration: BoxDecoration(
+                          gradient: schemePreviewGradient(scheme),
+                          shape: BoxShape.circle,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            scheme.name,
-                            style: const TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            schemeSummary(l10n, scheme),
-                            style: TextStyle(
-                              color: colorScheme.onSurfaceVariant,
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              scheme.name,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 3),
+                            Text(
+                              schemeSummary(l10n, scheme),
+                              maxLines: compact ? 3 : 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
+                  );
+                  final actions = <Widget>[
                     IconButton(
                       tooltip: l10n.loadSchemeTooltip,
                       onPressed: () => onLoadSavedScheme(scheme),
@@ -494,8 +594,36 @@ class MaskEditorPanel extends StatelessWidget {
                       onPressed: () => onDeleteSavedScheme(scheme.id),
                       icon: const Icon(Icons.delete_outline),
                     ),
-                  ],
-                ),
+                  ];
+
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: AppTheme.mutedSurface(context),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: compact
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              schemeInfo,
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: actions,
+                              ),
+                            ],
+                          )
+                        : Row(
+                            children: <Widget>[
+                              Expanded(child: schemeInfo),
+                              const SizedBox(width: 8),
+                              ...actions,
+                            ],
+                          ),
+                  );
+                },
               );
             }).toList(),
           ),
@@ -515,9 +643,16 @@ class MaskEditorPanel extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
+            Expanded(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+            const SizedBox(width: 12),
             Text(text),
           ],
         ),
@@ -542,17 +677,30 @@ class MaskEditorPanel extends StatelessWidget {
         color: AppTheme.tintSurface(context),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text(
-            label,
-            style: TextStyle(fontSize: 11, color: colorScheme.onSurfaceVariant),
-          ),
-          const SizedBox(height: 2),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.w700)),
-        ],
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 180),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 11,
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              value,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+          ],
+        ),
       ),
     );
   }

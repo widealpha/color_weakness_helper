@@ -60,28 +60,65 @@ class PagePreviewPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: <Widget>[
-              FilledButton.tonalIcon(
-                onPressed: onPreviousPage,
-                icon: const Icon(Icons.chevron_left),
-                label: Text(l10n.previousPageButton),
-              ),
-              FilledButton.tonalIcon(
-                onPressed: onNextPage,
-                icon: const Icon(Icons.chevron_right),
-                label: Text(l10n.nextPageButton),
-              ),
-              FilledButton.tonalIcon(
-                onPressed: pageCount > 0
-                    ? () => _showJumpDialog(context)
-                    : null,
-                icon: const Icon(Icons.pin_outlined),
-                label: Text(l10n.jumpToPageButton),
-              ),
-            ],
+          LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              final compact = constraints.maxWidth < 360;
+              if (compact) {
+                return Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: IconButton.filledTonal(
+                        tooltip: l10n.previousPageButton,
+                        onPressed: onPreviousPage,
+                        icon: const Icon(Icons.chevron_left),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: IconButton.filledTonal(
+                        tooltip: l10n.nextPageButton,
+                        onPressed: onNextPage,
+                        icon: const Icon(Icons.chevron_right),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: IconButton.filledTonal(
+                        tooltip: l10n.jumpToPageButton,
+                        onPressed: pageCount > 0
+                            ? () => _showJumpDialog(context)
+                            : null,
+                        icon: const Icon(Icons.pin_outlined),
+                      ),
+                    ),
+                  ],
+                );
+              }
+
+              return Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: <Widget>[
+                  FilledButton.tonalIcon(
+                    onPressed: onPreviousPage,
+                    icon: const Icon(Icons.chevron_left),
+                    label: Text(l10n.previousPageButton),
+                  ),
+                  FilledButton.tonalIcon(
+                    onPressed: onNextPage,
+                    icon: const Icon(Icons.chevron_right),
+                    label: Text(l10n.nextPageButton),
+                  ),
+                  FilledButton.tonalIcon(
+                    onPressed: pageCount > 0
+                        ? () => _showJumpDialog(context)
+                        : null,
+                    icon: const Icon(Icons.pin_outlined),
+                    label: Text(l10n.jumpToPageButton),
+                  ),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 16),
           if (errorMessage != null)
@@ -164,46 +201,29 @@ class PagePreviewPanel extends StatelessWidget {
               onTap: () => _showPreviewDialog(context, title, page, mask),
               child: AspectRatio(
                 aspectRatio: page.width / page.height,
-                child: Container(
-                  color: Colors.white,
-                  padding: const EdgeInsets.all(10),
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned.fill(child: _buildEffectPreview(page, mask)),
-                      Positioned(
-                        top: 10,
-                        right: 10,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
+                child: LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    final showBadgeLabel = constraints.maxWidth >= 210;
+                    return Container(
+                      color: Colors.white,
+                      padding: const EdgeInsets.all(10),
+                      child: Stack(
+                        children: <Widget>[
+                          Positioned.fill(
+                            child: _buildEffectPreview(page, mask),
                           ),
-                          decoration: BoxDecoration(
-                            color: AppTheme.previewBadgeBackground(context),
-                            borderRadius: BorderRadius.circular(99),
+                          Positioned(
+                            top: 10,
+                            right: 10,
+                            child: _PreviewZoomBadge(
+                              label: context.l10n.viewLargeImage,
+                              showLabel: showBadgeLabel,
+                            ),
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              const Icon(
-                                Icons.zoom_out_map,
-                                size: 16,
-                                color: Colors.white,
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                context.l10n.viewLargeImage,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -459,6 +479,46 @@ class PagePreviewPanel extends StatelessWidget {
       image: page.image,
       fit: BoxFit.contain,
       filterQuality: FilterQuality.high,
+    );
+  }
+}
+
+class _PreviewZoomBadge extends StatelessWidget {
+  const _PreviewZoomBadge({required this.label, required this.showLabel});
+
+  final String label;
+  final bool showLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: label,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: showLabel ? 10 : 8,
+          vertical: 6,
+        ),
+        decoration: BoxDecoration(
+          color: AppTheme.previewBadgeBackground(context),
+          borderRadius: BorderRadius.circular(99),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const Icon(Icons.zoom_out_map, size: 16, color: Colors.white),
+            if (showLabel) ...<Widget>[
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }

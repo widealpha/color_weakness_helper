@@ -28,10 +28,12 @@ class BookHomePage extends StatelessWidget {
         child: SafeArea(
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
-              final compact = constraints.maxHeight < 680;
-              final pagePadding = compact ? 16.0 : 20.0;
-              final heroPadding = compact ? 20.0 : 26.0;
-              final heroGap = compact ? 16.0 : 20.0;
+              final narrow = constraints.maxWidth < 420;
+              final compact = narrow || constraints.maxHeight < 680;
+              final pagePadding = narrow ? 12.0 : (compact ? 16.0 : 20.0);
+              final heroPadding = narrow ? 16.0 : (compact ? 20.0 : 26.0);
+              final heroGap = compact ? 14.0 : 20.0;
+              final heroRadius = narrow ? 20.0 : 28.0;
 
               return Padding(
                 padding: EdgeInsets.all(pagePadding),
@@ -42,7 +44,7 @@ class BookHomePage extends StatelessWidget {
                       width: double.infinity,
                       padding: EdgeInsets.all(heroPadding),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(28),
+                        borderRadius: BorderRadius.circular(heroRadius),
                         gradient: AppTheme.heroGradient(context),
                       ),
                       child: Column(
@@ -89,13 +91,17 @@ class BookHomePage extends StatelessWidget {
                                     vertical: 10,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: AppTheme.heroBadgeBackground(context),
+                                    color: AppTheme.heroBadgeBackground(
+                                      context,
+                                    ),
                                     borderRadius: BorderRadius.circular(99),
                                   ),
                                   child: Text(
                                     step,
                                     style: TextStyle(
-                                      color: Colors.white.withValues(alpha: 0.9),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.9,
+                                      ),
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -137,9 +143,7 @@ class BookHomePage extends StatelessWidget {
     if (provider.error != null) {
       return Align(
         alignment: Alignment.topLeft,
-        child: Text(
-          l10n.bookCatalogLoadFailed(provider.error.toString()),
-        ),
+        child: Text(l10n.bookCatalogLoadFailed(provider.error.toString())),
       );
     }
 
@@ -147,28 +151,40 @@ class BookHomePage extends StatelessWidget {
         .map((PdfBook book) => localizeBook(l10n, book))
         .toList(growable: false);
 
-    return SingleChildScrollView(
-      child: Align(
-        alignment: Alignment.topLeft,
-        child: Wrap(
-          spacing: 18,
-          runSpacing: 18,
-          children: books.map((PdfBook book) {
-            return BookCard(
-              book: book,
-              onTap: book.isAvailable
-                  ? () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => PdfReaderPage(book: book),
-                        ),
-                      );
-                    }
-                  : null,
-            );
-          }).toList(),
-        ),
-      ),
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final narrow = constraints.maxWidth < 420;
+        final cardWidth = narrow
+            ? constraints.maxWidth
+            : constraints.maxWidth.clamp(0.0, 360.0).toDouble();
+
+        return SingleChildScrollView(
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Wrap(
+              spacing: narrow ? 12 : 18,
+              runSpacing: narrow ? 12 : 18,
+              children: books.map((PdfBook book) {
+                return SizedBox(
+                  width: cardWidth,
+                  child: BookCard(
+                    book: book,
+                    onTap: book.isAvailable
+                        ? () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => PdfReaderPage(book: book),
+                              ),
+                            );
+                          }
+                        : null,
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
     );
   }
 }

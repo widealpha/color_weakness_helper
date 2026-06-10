@@ -88,182 +88,183 @@ class _PdfReaderView extends StatelessWidget {
         ),
         child: SafeArea(
           top: false,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(28),
-                    gradient: AppTheme.heroGradient(context),
-                  ),
-                  child: Wrap(
-                    spacing: 18,
-                    runSpacing: 18,
-                    alignment: WrapAlignment.spaceBetween,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: <Widget>[
-                      SizedBox(
-                        width: 580,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              book.subtitle,
-                              style: Theme.of(context).textTheme.headlineMedium
-                                  ?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              l10n.readerCurrentSource(book.title),
-                              style: Theme.of(context).textTheme.bodyLarge
-                                  ?.copyWith(
-                                    color: Colors.white.withValues(alpha: 0.88),
-                                    height: 1.45,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: 260,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppTheme.heroBadgeBackground(context),
-                          borderRadius: BorderRadius.circular(22),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              activeScheme.name,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Container(
-                              height: 72,
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints pageConstraints) {
+              final narrow = pageConstraints.maxWidth < 420;
+              final pagePadding = narrow ? 12.0 : 20.0;
+              final heroPadding = narrow ? 16.0 : 24.0;
+              final heroRadius = narrow ? 20.0 : 28.0;
+              final sectionGap = narrow ? 14.0 : 20.0;
+
+              return SingleChildScrollView(
+                padding: EdgeInsets.all(pagePadding),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    LayoutBuilder(
+                      builder:
+                          (
+                            BuildContext context,
+                            BoxConstraints heroConstraints,
+                          ) {
+                            final stackHero = heroConstraints.maxWidth < 720;
+                            final summaryCard = _SchemeSummaryCard(
+                              scheme: activeScheme,
+                              compact: stackHero,
+                            );
+                            final titleBlock = _ReaderHeroTitle(
+                              book: book,
+                              compact: narrow,
+                            );
+
+                            return Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.all(heroPadding),
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(18),
-                                gradient: schemePreviewGradient(activeScheme),
+                                borderRadius: BorderRadius.circular(heroRadius),
+                                gradient: AppTheme.heroGradient(context),
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              schemeSummary(l10n, activeScheme),
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.84),
+                              child: stackHero
+                                  ? Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        titleBlock,
+                                        const SizedBox(height: 16),
+                                        summaryCard,
+                                      ],
+                                    )
+                                  : Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        Expanded(child: titleBlock),
+                                        const SizedBox(width: 18),
+                                        SizedBox(
+                                          width: 260,
+                                          child: summaryCard,
+                                        ),
+                                      ],
+                                    ),
+                            );
+                          },
+                    ),
+                    SizedBox(height: sectionGap),
+                    LayoutBuilder(
+                      builder:
+                          (BuildContext context, BoxConstraints constraints) {
+                            final preview = PagePreviewPanel(
+                              page: provider.renderedPage,
+                              isOpeningDocument: provider.isOpeningDocument,
+                              isLoading: provider.isRenderingPage,
+                              mask: activeScheme,
+                              currentPage: provider.currentPage,
+                              pageCount: provider.pageCount,
+                              errorMessage: _buildErrorMessage(
+                                context,
+                                provider,
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                              onPreviousPage: provider.currentPage > 1
+                                  ? () => provider.showPage(
+                                      provider.currentPage - 1,
+                                    )
+                                  : null,
+                              onNextPage:
+                                  provider.pageCount > 0 &&
+                                      provider.currentPage < provider.pageCount
+                                  ? () => provider.showPage(
+                                      provider.currentPage + 1,
+                                    )
+                                  : null,
+                              onJumpToPage: (int pageNumber) {
+                                unawaited(provider.showPage(pageNumber));
+                              },
+                              onRetryOpenDocument:
+                                  provider.documentError == null
+                                  ? null
+                                  : () {
+                                      unawaited(provider.retryOpenDocument());
+                                    },
+                            );
+
+                            final controls = MaskEditorPanel(
+                              mode: provider.mode,
+                              defaultSchemes: defaultSchemes,
+                              selectedDefaultSchemeIndex:
+                                  provider.selectedDefaultSchemeIndex,
+                              savedSchemes: provider.savedSchemes,
+                              isLoadingSavedSchemes:
+                                  provider.isLoadingSavedSchemes,
+                              customColor: provider.customColor,
+                              customOpacity: provider.opacity,
+                              customRed: provider.red,
+                              customGreen: provider.green,
+                              customBlue: provider.blue,
+                              customEffectMode: provider.effectMode,
+                              customFirstMatrixPass: provider.firstMatrixPass,
+                              customSecondMatrixPass: provider.secondMatrixPass,
+                              customBlendMode: provider.blendMode,
+                              onModeChanged: provider.setMode,
+                              onDefaultSchemeSelected:
+                                  provider.selectDefaultScheme,
+                              onStartCustomFromDefault: () {
+                                provider.startCustomFromScheme(
+                                  defaultSchemes[provider
+                                      .selectedDefaultSchemeIndex],
+                                );
+                              },
+                              onEffectModeChanged: provider.setEffectMode,
+                              onFirstMatrixPassChanged:
+                                  provider.setFirstMatrixPass,
+                              onSecondMatrixPassChanged:
+                                  provider.setSecondMatrixPass,
+                              onBlendModeChanged: provider.setBlendMode,
+                              onRedChanged: provider.setRed,
+                              onGreenChanged: provider.setGreen,
+                              onBlueChanged: provider.setBlue,
+                              onOpacityChanged: provider.setOpacity,
+                              onResetCustom: provider.resetCustom,
+                              onSaveCustomScheme: () {
+                                unawaited(
+                                  _saveCurrentScheme(context, provider),
+                                );
+                              },
+                              onLoadSavedScheme: provider.loadSavedScheme,
+                              onDeleteSavedScheme: (String schemeId) {
+                                unawaited(
+                                  _deleteSavedScheme(
+                                    context,
+                                    provider,
+                                    schemeId,
+                                  ),
+                                );
+                              },
+                            );
+
+                            if (constraints.maxWidth >= 1080) {
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Expanded(flex: 5, child: preview),
+                                  SizedBox(width: sectionGap),
+                                  Expanded(flex: 4, child: controls),
+                                ],
+                              );
+                            }
+
+                            return Column(
+                              children: <Widget>[
+                                preview,
+                                SizedBox(height: sectionGap),
+                                controls,
+                              ],
+                            );
+                          },
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 20),
-                LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                    final preview = PagePreviewPanel(
-                      page: provider.renderedPage,
-                      isOpeningDocument: provider.isOpeningDocument,
-                      isLoading: provider.isRenderingPage,
-                      mask: activeScheme,
-                      currentPage: provider.currentPage,
-                      pageCount: provider.pageCount,
-                      errorMessage: _buildErrorMessage(context, provider),
-                      onPreviousPage: provider.currentPage > 1
-                          ? () => provider.showPage(provider.currentPage - 1)
-                          : null,
-                      onNextPage:
-                          provider.pageCount > 0 &&
-                              provider.currentPage < provider.pageCount
-                          ? () => provider.showPage(provider.currentPage + 1)
-                          : null,
-                      onJumpToPage: (int pageNumber) {
-                        unawaited(provider.showPage(pageNumber));
-                      },
-                      onRetryOpenDocument: provider.documentError == null
-                          ? null
-                          : () {
-                              unawaited(provider.retryOpenDocument());
-                            },
-                    );
-
-                    final controls = MaskEditorPanel(
-                      mode: provider.mode,
-                      defaultSchemes: defaultSchemes,
-                      selectedDefaultSchemeIndex:
-                          provider.selectedDefaultSchemeIndex,
-                      savedSchemes: provider.savedSchemes,
-                      isLoadingSavedSchemes: provider.isLoadingSavedSchemes,
-                      customColor: provider.customColor,
-                      customOpacity: provider.opacity,
-                      customRed: provider.red,
-                      customGreen: provider.green,
-                      customBlue: provider.blue,
-                      customEffectMode: provider.effectMode,
-                      customFirstMatrixPass: provider.firstMatrixPass,
-                      customSecondMatrixPass: provider.secondMatrixPass,
-                      customBlendMode: provider.blendMode,
-                      onModeChanged: provider.setMode,
-                      onDefaultSchemeSelected: provider.selectDefaultScheme,
-                      onStartCustomFromDefault: () {
-                        provider.startCustomFromScheme(
-                          defaultSchemes[provider.selectedDefaultSchemeIndex],
-                        );
-                      },
-                      onEffectModeChanged: provider.setEffectMode,
-                      onFirstMatrixPassChanged: provider.setFirstMatrixPass,
-                      onSecondMatrixPassChanged: provider.setSecondMatrixPass,
-                      onBlendModeChanged: provider.setBlendMode,
-                      onRedChanged: provider.setRed,
-                      onGreenChanged: provider.setGreen,
-                      onBlueChanged: provider.setBlue,
-                      onOpacityChanged: provider.setOpacity,
-                      onResetCustom: provider.resetCustom,
-                      onSaveCustomScheme: () {
-                        unawaited(_saveCurrentScheme(context, provider));
-                      },
-                      onLoadSavedScheme: provider.loadSavedScheme,
-                      onDeleteSavedScheme: (String schemeId) {
-                        unawaited(
-                          _deleteSavedScheme(context, provider, schemeId),
-                        );
-                      },
-                    );
-
-                    if (constraints.maxWidth >= 1080) {
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Expanded(flex: 5, child: preview),
-                          const SizedBox(width: 20),
-                          Expanded(flex: 4, child: controls),
-                        ],
-                      );
-                    }
-
-                    return Column(
-                      children: <Widget>[
-                        preview,
-                        const SizedBox(height: 20),
-                        controls,
-                      ],
-                    );
-                  },
-                ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
@@ -334,5 +335,86 @@ class _PdfReaderView extends StatelessWidget {
         error.details ?? '',
       ),
     };
+  }
+}
+
+class _ReaderHeroTitle extends StatelessWidget {
+  const _ReaderHeroTitle({required this.book, required this.compact});
+
+  final PdfBook book;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          book.subtitle,
+          style:
+              (compact
+                      ? Theme.of(context).textTheme.headlineSmall
+                      : Theme.of(context).textTheme.headlineMedium)
+                  ?.copyWith(color: Colors.white, fontWeight: FontWeight.w800),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          l10n.readerCurrentSource(book.title),
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            color: Colors.white.withValues(alpha: 0.88),
+            height: 1.45,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SchemeSummaryCard extends StatelessWidget {
+  const _SchemeSummaryCard({required this.scheme, required this.compact});
+
+  final MaskScheme scheme;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(compact ? 14 : 16),
+      decoration: BoxDecoration(
+        color: AppTheme.heroBadgeBackground(context),
+        borderRadius: BorderRadius.circular(compact ? 18 : 22),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            scheme.name,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            height: compact ? 52 : 72,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(compact ? 14 : 18),
+              gradient: schemePreviewGradient(scheme),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            schemeSummary(l10n, scheme),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.84)),
+          ),
+        ],
+      ),
+    );
   }
 }
