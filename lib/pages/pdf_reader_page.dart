@@ -141,7 +141,7 @@ class _PdfReaderView extends StatelessWidget {
                                         Expanded(child: titleBlock),
                                         const SizedBox(width: 18),
                                         SizedBox(
-                                          width: 260,
+                                          width: 400,
                                           child: summaryCard,
                                         ),
                                       ],
